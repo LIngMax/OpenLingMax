@@ -327,7 +327,7 @@ var editor,layedit;
                     if (fs.existsSync(dirxx(p.path))) {
                         $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
                         setTimeout(function() { //图标刷新BUG
-                            tt.innerHTML = '重新安装';
+                            tt.innerHTML = '运行';
                             tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
                         }, 100);
                         //运行
