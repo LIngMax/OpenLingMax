@@ -1,0 +1,182 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <!-- 代码编辑器 -->
+    <link rel="stylesheet" href="../js/CM/lib/codemirror.css">
+    <script src="../js/CM/lib/codemirror.js"></script>
+    <script src="../js/CM/addon/selection/active-line.js"></script>
+    <script src="../js/CM/addon/edit/matchbrackets.js"></script>
+    <script src="../js/CM/mode/javascript/javascript.js"></script>
+    <script src="../js/CM/addon/hint/show-hint.js"></script>
+    <script src="../js/CM/addon/hint/javascript-hint.js"></script>
+    <link rel="stylesheet" href="../js/CM/addon/hint/show-hint.css">
+    <!-- <link rel="stylesheet" href="../js/CM/theme/ttcn.css"> -->
+    <link rel="stylesheet" href="../js/CM/theme/railscasts.css">
+    <script src="../js/CM/addon/search/searchcursor.js"></script>
+    <script src="../js/CM/addon/scroll/annotatescrollbar.js"></script>
+    <script src="../js/CM/addon/search/matchesonscrollbar.js"></script>
+    <script src="../js/CM/addon/search/match-highlighter.js"></script>
+    <link rel="stylesheet" href="../js/CM/addon/search/matchesonscrollbar.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+
+        #main{
+            padding: 0px 0px;
+            
+        }
+        hr {
+            margin: 5px 0;
+        }
+        .layui-tab {
+            margin:0;
+        }
+        .cm-s-railscasts span.cm-comment {
+            color: #61A151;
+            font-style: initial;
+        }
+        .layui-table, .layui-table-view {
+            margin: 0px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">JSON解析</li>
+            <li>JS环境调试</li>
+            <li>css/Js压缩/美化</li>
+        </ul>
+        <div class="layui-tab-content" > 
+            <div class="layui-tab-item layui-show">2</div>
+            <div class="layui-tab-item">3</div>
+            <div class="layui-tab-item">4</div>
+        </div>
+    </div> -->
+    <div id="IDE"></div>
+    <div style="margin-top:3px;margin-left:3px;">
+        <button class="layui-btn layui-btn-sm" onclick="eval(CmIDE.getValue())" title="普通变量数据保留"> 全局运行 </button>
+        <button class="layui-btn layui-btn-sm" onclick="(function (ss){eval(ss)})(CmIDE.getValue())" title="普通变量数据被隔离, 只有用window['xxx']才可以保存全局变量"> 隔离运行 </button>
+        <button class="layui-btn layui-btn-sm"onclick="showVar()"> 分析变量 </button>
+        <button class="layui-btn layui-btn-sm" onclick="CmIDE.setValue(js_beautify(CmIDE.getValue()));"> 代码美化 </button>
+        <button class="layui-btn layui-btn-sm" onclick="CmIDE.setValue((new Packer).pack(CmIDE.getValue(), 0, 0));"> 代码压缩 </button>
+        <button class="layui-btn layui-btn-sm" onclick="win.showDevTools();//启动调试工具"> 打开调试工具 </button>
+    </div>
+</body>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script src="../js/dataCode.js"></script>
+<script src="../js/VP.js"></script>
+<script src="../js/vconsole.min.js"></script>
+<script>
+    var db_classx = window.location.hash.slice(1);
+    var element;
+    layui.use('element', function(){
+        element = layui.element;
+    });
+
+
+//重新渲染表单
+function renderForm(){
+  layui.use('form', function(){
+   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+   form.render();
+  });
+}
+</script>
+<script>
+//刷新正则数据列表
+layui.use('table', function() {
+
+});
+
+//显示所有变量
+function showVar(){
+    //高性能扫描内存
+    var ss = VP.SweepVariable('window',[
+        'CmIDE','element','layui','$','chrome','location','process','layer',
+        'vConsole','history','global','parent','nw','base2','document'
+    ],99,10000);
+    //console.log(ss.arr);
+    layer.open({
+        type: 1, 
+        'area':['97%', '97%'],
+        content: '<blockquote class="layui-elem-quote">查看当前环境下的的公共变量内容。自动过滤自带变量</blockquote><table id="website" lay-filter="demo"></table>', //这里content是一个普通的String
+        success: function(layero, index){
+            console.log(layero, index);
+            //创建表格
+            layui.table.render({
+                elem: '#website',
+                'data':ss.arr,
+                limit:8,
+                page: true, 
+                cols: [
+                    [
+                        {
+                            field: 'path',
+                            title: '变量地址',
+                            //fixed: 'left',
+                            //unresize: true,
+                            //type:'radio'
+                        },
+                        {
+                            field: 'val',
+                            title: '数据',
+                            //fixed: 'left',
+                            //unresize: true,
+                            //type:'radio'
+                        }
+                    ]
+                ],
+            });
+        },
+        
+    });
+
+}
+
+
+var CmIDE = CodeMirror(IDE,
+{
+    value:
+`/*
+快捷键Ctrl 语法提示
+
+支持 【撤销、恢复】
+
+【括号、语法】高亮
+
+NodeJs环境API                   http://nodejs.cn/api/
+Chrome浏览器JavaScript环境API   https://www.runoob.com/js/js-tutorial.html
+jQuery插件API                   https://www.runoob.com/jquery/jquery-tutorial.html
+NW.js环境API                    https://nwjs.org.cn/doc/index.html
+
+温馨提示: NodeJs环境的npm插件包 直接在resource文件夹下载即可
+*/
+function name(params) {
+    return params;
+}
+`   ,
+    mode: "javascript",
+    lineNumbers: true,
+    styleActiveLine: true, // 当前行背景高亮
+    matchBrackets: true,   // 括号匹配
+    extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "railscasts",//主题
+    sadfasgfasdgffd: ""
+});
+CmIDE.setSize('100%', 'calc(100% - 35px)');
+</script>

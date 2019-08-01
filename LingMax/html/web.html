@@ -1,0 +1,266 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+        
+        .py_right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+        }
+        
+        .color_qj_red {
+            color: #FF5722;
+        }
+        
+        .color_qj_green {
+            color: #5FB878;
+        }
+        
+        #nxxc {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .layui-layer-content .layui-form-label {
+            width: 40px;
+        }
+        
+        .layui-layer-content .layui-input-block {
+            margin-left: 70px;
+        }
+        
+        .layui-layer-content .layui-form {
+            padding-top: 10px;
+            padding-right: 10px;
+        }
+        .layui-table-view{
+            margin: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="website" lay-filter="demo"></table>
+</body>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="Add"> 添 加 </button>
+        <input type="text" id="Search_val" placeholder="请输入标题" style="width: 150px !important;height: 30px !important;font-size: 14px;margin-right: 10px;" onkeydown="if(event.keyCode==13){SearchX.click();}">
+        <button id="SearchX" class="layui-btn layui-btn-sm" lay-event="Search"><i class="layui-icon layui-icon-search"></i></button>
+    </div>
+    </div>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs" lay-event="open">打开</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="dom_edit">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_name" placeholder="请输入标题" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_addr" placeholder="请输入地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">详情</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_info" placeholder="请输入详情" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" id="db_sortx" placeholder="排序从大到小" class="layui-input">
+            </div>
+        </div>
+    </form>
+
+</script>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script>
+    var db_classx = window.location.hash.slice(1);
+
+    layui.use('table', function() {
+        var table = layui.table;
+        db.all('select * from web where classx = ? order by sortx desc', [db_classx], function(err, rows) {
+            //修复bug   node 的坑  sql 返回的是对象不是数组
+            //rows = JSON.parse(JSON.stringify(rows));//方法1
+            //方法2
+            var ls = [];
+            for (val in rows) {
+                ls.push(rows[val]);
+            }
+            rows = ls;
+            ls = null;
+            //创建表格
+            table.render({
+                elem: '#website',
+                cols: [
+                    [{
+                        field: 'id',
+                        title: 'ID',
+                        width: 50,
+                        fixed: 'left',
+                        unresize: true,
+                    }, {
+                        field: 'name',
+                        title: '网站名字',
+                    }, {
+                        field: 'addr',
+                        title: '地址',
+                        width: 60
+                    }, {
+                        field: 'time',
+                        title: '时间',
+                        width: 70,
+                    }, {
+                        field: 'info',
+                        title: '详情',
+                    }, {
+                        toolbar: '#bar',
+                        fixed: 'right',
+                        title: '操作',
+                        width: 160
+                    }]
+                ],
+                data: rows,
+                page: true,
+                toolbar: '#toolbar',
+                defaultToolbar: ['filter'],
+                even: true
+                    //limit: 10 //每页默认显示的数量
+                    //,skin: 'line' //表格风格
+            });
+
+            //头工具栏事件
+            table.on('toolbar(demo)', function(obj) {
+                var d = obj.data;
+                switch (obj.event) {
+                    case 'Search':
+                        var sv = Search_val.value;
+                        if(sv == ''){
+                            location.reload();
+                            return;
+                        }
+                        db.all('select * from web where name like "%' + sv + '%" or info like "%' + sv + '%" or addr like "%' + sv + '%" order by sortx desc', [], function(err, rows) {
+                            var ls = [];
+                            for (val in rows) {
+                                ls.push(rows[val]);
+                            }
+                            rows = ls;
+                            table.reload('website', {
+                                data: rows
+                            });
+                            Search_val.value = sv;
+                        });
+                        break;
+                    case 'Add':
+                        layer.open({
+                            type: 1,
+                            content: $('#dom_edit').html(),
+                            btn: ['确认', '取消'],
+                            yes: function(index, layero) {
+                                db.run('INSERT INTO web ( "name", "addr", "time", "classx", "info","sortx") VALUES ( ?, ?, date("now"), ?, ?, ?);', [db_name.value, db_addr.value, db_classx, db_info.value, Number(db_sortx.value)]);
+                                
+                                //删除后更新数据
+                                db.all('select * from web where classx = ?', [db_classx], function(err, rows) {
+                                    var ls = [];
+                                    for (val in rows) {
+                                        ls.push(rows[val]);
+                                    }
+                                    rows = ls;
+                                    table.reload('website', {
+                                        data: rows
+                                    });
+                                });
+                                layer.close(index);
+                            }
+                        });
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(demo)', function(obj) {
+                var d = obj.data;
+                switch (obj.event) {
+                    case 'del':
+                        layer.confirm('真的删除行么', function(index) {
+                            obj.del();
+                            db.run('delete from web where id = ?', [d.id]);
+                            //删除后更新数据
+                            db.all('select * from web where classx = ?', [db_classx], function(err, rows) {
+                                var ls = [];
+                                for (val in rows) {
+                                    ls.push(rows[val]);
+                                }
+                                rows = ls;
+                                table.reload('website', {
+                                    data: rows
+                                });
+                            });
+                            layer.close(index);
+                        });
+                        break;
+                    case 'open':
+                        nwjs.Shell.openExternal(d.addr)
+                        break;
+                    case 'edit':
+                        //编辑
+                        layer.open({
+                            type: 1,
+                            content: $('#dom_edit').html(),
+                            btn: ['确认', '取消'],
+                            yes: function(index, layero) {
+                                db.run('update web set name = ? , addr = ? , time = date("now") , info= ? ,sortx = ? where id = ?', [db_name.value, db_addr.value, db_info.value, Number(db_sortx.value), d.id]);
+                                obj.update({
+                                    name: db_name.value,
+                                    addr: db_addr.value,
+                                    info: db_info.value,
+                                    sortx: Number(db_sortx.value)
+                                });
+                                layer.close(index);
+                            },
+                            success: function() {
+                                //初始化代码
+                                db_name.value = d.name;
+                                db_addr.value = d.addr;
+                                db_info.value = d.info;
+                                db_sortx.value = Number(d.sortx);
+                            }
+                        });
+                        break;
+                }
+            });
+
+        });
+    });
+</script>
+<script src="../layui/layui.all.js"></script>

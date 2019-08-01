@@ -1,0 +1,1286 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post模拟</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+
+
+    <link rel="stylesheet" href="../js/CM/lib/codemirror.css">
+    <script src="../js/CM/lib/codemirror.js"></script>
+    <script src="../js/CM/mode/javascript/javascript.js"></script>
+
+    <script src="../js/CM/addon/hint/show-hint.js"></script>
+    <script src="../js/CM/addon/hint/javascript-hint.js"></script>
+    <link rel="stylesheet" href="../js/CM/addon/hint/show-hint.css">
+    <link rel="stylesheet" href="../js/CM/theme/ambiance.css">
+    <!-- Json编辑器 JM  -->
+    <script src="../js/JM/jsoneditor-minimalist.min.js"></script>
+    <link rel="stylesheet" href="../js/JM/jsoneditor.min.css">
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        .fdouufgdgs .layui-form-label{
+            width: 75px;
+            padding: 8px 0px;
+        }
+        .fdouufgdgs .layui-input-block{
+            margin-left: 75px;
+        }
+        .layui-form-item {
+            margin-bottom: 5px;
+        }
+        .layui-colla-content {
+            padding: 0px 0px;
+        }
+        .layui-tab {
+            margin: 0px 0;
+        }
+        .layui-tab-content {
+            padding: 0 10px 5px;
+        }
+
+        .bbg{
+            height: 30px;
+            line-height: 30px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        .bg1{
+            width: calc(22% - 32px);
+            height:100%;
+            vertical-align: top;
+            display:table-cell;
+            box-sizing:content-box;
+            text-align: center;
+            border-style: solid;
+            border-width: 1px;
+            border-color: rgb(169, 169, 169);
+        }
+        .bg2{
+            display:table-cell;
+            max-width: 50%;
+            width: 50%;
+            height:100%;
+            box-sizing:content-box;
+        }
+        .bg3{
+            vertical-align: top;
+            max-width: 27%;
+            width: 27%;
+            height:100%;
+            display:table-cell;
+            box-sizing:content-box;
+        }
+        .bg5{
+            height:100%;
+            display: inline-table;
+            border-width: 1px;
+            border-style: inset;
+            border-color: #B2B2B2;
+            width: 50%;
+            box-sizing:content-box;
+        }
+        .inputAll{
+            width: 100%;
+            display:table;
+            height: 34px;
+            position: relative;
+        }
+
+        .delCss{
+            position:absolute;
+        }
+        .delInput:hover,.delCss:hover{
+            color: red !important;
+            cursor: pointer ;
+        }
+
+        #xhxxide,#retide,#rHeaders,#rBin{
+            height: 75%;
+        }
+        .CodeMirror{
+            height: 100%;
+        }
+
+        /* JM json编辑器 */
+        #jsoneditor{
+            float: left;
+            width: 65%;
+            height: 85%;
+        }
+
+        /* json 属性查看控件 */
+        .jmxs{
+            float:right;
+            width: calc(35% - 6px);
+            height: 85%;
+            margin-left: 5px;
+            
+        }
+
+        /* 禁用启用参数 */
+        .inputAll .layui-icon-close{
+            color:purple;
+            margin-left: 20px;
+        }
+        .inputAll .layui-icon-ok{
+            margin-left: 20px;
+            color: green;
+        }
+
+        /* JM json的样式修改 */
+        div.jsoneditor {
+            border: thin solid #009688;
+        }
+        div.jsoneditor-menu {
+            background-color: #009688;
+            border-bottom: 1px solid #009688;
+        }
+        .abc{
+            vertical-align: top;
+            margin: 10px 5px;
+        }
+        body{
+            padding-left: 0;
+        }
+        .main,.main *{
+            outline: none;
+            cursor: pointer ;
+        }
+        .main{
+            width: 15px;
+            caret-color:transparent;
+            right: 0;
+            left: inherit;
+            outline: none;
+            cursor: pointer ;
+        }
+        .main:focus,.main:hover{
+            width: 300px;
+        }
+        .layui-nav-tree {
+            width: 300px;
+        }
+        .layui-side-scroll {
+            width: 320px;
+        }
+
+        #ffa{
+            width: calc(100% - 15px);
+            height: 100%;
+            overflow: auto;
+        }
+        .layui-nav-tree .layui-nav-bar{
+            width:15px;
+        }
+        .layui-form-item .layui-inline {
+            margin-right: 5px;
+        }
+        
+        .delInput{
+            position: absolute;
+            top: 3px;
+            font-size: 20px;
+            margin-left: 5px;
+        }
+        .layui-btn.layui-btn-fluid,.layui-btn-xs{
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        .cm-s-ambiance span.cm-comment {
+            color: #61A151;
+            font-style: initial;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div style="outline: none;height: 100px;white-space: pre;overflow-x:hidden;overflow-y:auto;" contenteditable="plaintext-only">sds</div> -->
+<div id="ffa">
+    <form class="layui-form fdouufgdgs" style="margin-top: 5px;padding: 0 10px;" onsubmit="return false;">
+        <div class="layui-form-item" >
+            <div class="layui-inline" style="width: calc( 15% + 100px);">
+                <input id="httpName" type="text"  placeholder="请输入接口名字...双击粘贴" ondblclick="this.select();document.execCommand('paste');" autocomplete="on" class="layui-input">
+            </div>
+            <div class="layui-inline" style="width: calc( 85% - 425px);">
+                <input type="text" id="inputId" value="" style="display:none">
+                <input type="text" id="pid" value="" style="display:none">
+                <input id="httpUrl" type="text"  value="http://www.lingmax.top/" placeholder="请输入HTTP地址...双击粘贴" ondblclick="this.select();document.execCommand('paste');" autocomplete="on" class="layui-input">
+            </div>
+            <div class="layui-inline" style="width: 110px;">
+                <select id="sendMode" lay-verify="">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                    <option value="TRACE">TRACE</option>
+                    <option value="OPTIONS">OPTIONS</option>
+                    <option value="LOCK">LOCK</option>
+                    <option value="MKCOL">MKCOL</option>
+                    <option value="MOVE">MOVE</option>
+                    <option value="COPY">COPY</option>
+                    <option value="HEAD">HEAD</option>
+                    <option value="VIEW">VIEW</option>
+                    <option value="PROPFIND">PROPFIND</option>
+                    <option value="UNLOCK">UNLOCK</option>
+                    <option value="PURGE">PURGE</option>
+                    <option value="UNLINK">UNLINK</option>
+                    <option value="LINK">LINK</option>
+                    <option value="PATCH">PATCH</option>
+                </select>
+            </div>
+            <div class="layui-inline" style="width: 180px;">
+                <button class="layui-btn layui-btn-sm" onclick="sendHttp();return false;" >发送</button>
+                <button class="layui-btn layui-btn-sm" onclick="saveInput()">保存</button>
+                <button class="layui-btn layui-btn-sm" onclick="newSaveInput()">另存为</button>
+                <i class="layui-icon layui-icon-delete delInput" onclick="delSaveInput()" title="删除接口"></i>
+            </div>
+            
+        </div>
+    </form>
+    <div class="layui-collapse">
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">提交参数</h2>
+            <div class="layui-colla-content layui-show">
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">参数填写(API常用)</li>
+                        <li>自定义参数(抓包常用)</li>
+                        <li>Cookies(自动合并更新)</li>
+                        <li>Headers(协议头)</li>
+                    </ul>
+                    <div class="layui-tab-content" >
+                        <div class="layui-tab-item layui-show">
+                            <form class="layui-form layui-form-pane" style="margin-top: 8px;" onsubmit="return false;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">数据协议</label>
+                                    <div class="layui-input-block">
+                                        <select id="DataModeTx" >
+                                            <option value="application/x-www-form-urlencoded">www-form-urlencoded-----常用模式(URL)----------?id=11&aa=12</option>
+                                            <option value="multipart/form-data">multipart/form-data---------兼容性较强(form-data)--支持文件上传</option>
+                                            <option value="application/json">application/json-------------接口专用(Json)----------{"id":11}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                            <div style="text-align: center;">
+                                
+                                <button class="layui-btn layui-btn-xs " onclick="$('#sendData .inputAll').remove();">删除所有参数</button>
+                                <button class="layui-btn layui-btn-xs " onclick="copyUrlE();return false;">复制参数(URL)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="copyJsonE();return false;">复制参数(JSON)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="addFile();return false;">添加文件参数</button>
+                                <button class="layui-btn layui-btn-xs " onclick="addInput();return false;">添加文本参数</button>
+                                <button class="layui-btn layui-btn-xs " onclick="autoStr();return false;">粘贴 / 自动识别参数</button>
+                            </div>
+                            <form class="layui-form layui-form-pane" style="margin-top: 8px;" id ='sendData' onsubmit="return false;">
+                                <div style="width: 21%;display:inline-block;text-align: center;/*border-width: 1px;border-style: inset;border-color: #B2B2B2;box-sizing:content-box;*/">字段</div>
+                                <div style="width: 50%;display:inline-block;text-align: center;">值</div>
+                                <div style="width: 27%;display:inline-block;text-align: center;">说明</div>
+                                <!-- 此处存放参数 -->
+                            </form>
+                        </div>
+                        <div class="layui-tab-item">
+                            <form class="layui-form layui-form-pane" style="margin-top: 8px;" onsubmit="return false;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">数据协议</label>
+                                    <div class="layui-input-block">
+                                        <select id="DataModeZdy" lay-verify="">
+                                            <option value="application/x-www-form-urlencoded">www-form-urlencoded-----常用模式(URL)----------?id=11&aa=12</option>
+                                            <option value="application/json">application/json-------------接口专用(Json)----------{"id":11}</option>
+                                            <option value="text/plain">text/plain 文本提交</option>
+                                            <option value="text/xml">text/xml</option>
+                                            <option value="application/xml">application/xml</option>
+                                            <option value="text/html">text/html</option>
+                                            <option value="application/xml">application/html</option>
+                                            <option value="application/javascript">application/javascript</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                            <textarea id="zdyPost" class="layui-textarea" placeholder='id=11&aa=12 或者 {"id":11} 等等...双击粘贴' ondblclick="this.select();document.execCommand('paste');" ></textarea>
+                        </div>
+
+                        <div class="layui-tab-item">
+                            <button class="layui-btn layui-btn-xs abc" onclick="getCookies(httpUrl.value,function(ls){nCookies.value=ls});return false;">读取最新Cookies</button>
+                            <button class="layui-btn layui-btn-xs abc" onclick="delCookies(httpUrl.value);return false;">删除该URL的Cookies</button>
+                            <button class="layui-btn layui-btn-xs abc" onclick="nCookies.value= nCookies.value.replace(/;/g,';\r\n');">美化Cookies</button>
+                            <textarea id="nCookies"  placeholder="gid=GA1.3.8xxxx;session=sfggdg;等等...双击粘贴" ondblclick="this.select();document.execCommand('paste');" class="layui-textarea" ></textarea>
+                        </div>
+                        <div class="layui-tab-item">
+                            <textarea id="nHeaders"  placeholder="双击粘贴....
+Accept-Language: zh-CN,zh;q=0.9
+Token: 88888888
+session: 88888888
+禁用以下名称的协议头,或者是：Proxy-或开头Sec- 如果填入自动忽略不发送
+User-Agent
+Accept-Charset
+Accept-Encoding
+Access-Control-Request-Headers
+Access-Control-Request-Method
+Connection
+Content-Length
+Cookie
+Cookie2
+Date
+DNT
+Expect
+Host
+Keep-Alive
+Origin
+Proxy-
+Sec-
+Referer
+TE
+Trailer
+Transfer-Encoding
+Upgrade
+Via" ondblclick="this.select();document.execCommand('paste');"  class="layui-textarea" ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-colla-item" onclick="/*数据无法及时刷新BUG*/setTimeout('CmIDE.refresh()', 100);">
+            <h2 class="layui-colla-title">自动化JS脚本---每次点击发送时都会先运行此脚本</h2>
+            <div class="layui-colla-content layui-show diogflagfjdh">
+                <div id="xhxxide"></div>
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">
+                HTTP状态码: 
+                <span id='httpcode'>---</span>
+                [<span style="color:#337AB7;" id='httptype'>---</span>]
+                结果: <span  id='httpzt'>---</span>
+                请求: <span style="color:#337AB7;" id='httpqq'>---</span>ms 
+                文档解析: <span style="color:#337AB7;" id='httpjx'>---</span>ms
+            </h2>
+            <div class="layui-colla-content layui-show dsajirgfdjj">
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" onclick="/*数据无法及时刷新BUG*/setTimeout('RetIDE.refresh()', 100);">Text(通用结果)</li>
+                        <li>Json(接口常用)</li>
+                        <li>View(视图资源)</li>
+                        <li>Head(响应数据)</li>
+                        <li>Data(BIN数据)</li>
+                        <li>Doc(API文档)</li>
+                    </ul>
+                    <div class="layui-tab-content" >
+                        <div class="layui-tab-item layui-show">
+                            <button class="layui-btn layui-btn-xs" onclick="RetIDE.setValue(CSSdecode(RetIDE.getValue()));">Css美化</button>
+                            <button class="layui-btn layui-btn-xs " onclick="RetIDE.setValue(js_beautify(RetIDE.getValue()));">JS/JSON美化</button>
+                            <button class="layui-btn layui-btn-xs" onclick="RetIDE.setValue(html_beautify(RetIDE.getValue()));">HTML美化</button>
+                            <button class="layui-btn layui-btn-xs " onclick="RetIDE.setValue(JSON.stringify(JSON.parse(RetIDE.getValue()),undefined, 4));return false;">Json美化2</button>
+                            <div id="retide"></div>
+                        </div>
+                        <div class="layui-tab-item drgsdhtfhsd">
+                            <div id="jsoneditor"></div>
+                            <div class="jmxs">
+                                <button class="layui-btn layui-btn-xs " onclick="jmnr.value = JSON.stringify(JSON.parse(jmnr.value),undefined, 4);return false;">Json美化</button>
+                                <button class="layui-btn layui-btn-xs " onclick="layer.open({offset:  ['100px', '100px'],type: 1, content: '<img src=\''+(/^data:image\/\w+;base64,/.test(jmnr.value)? '':'data:image/png;base64,')+jmnr.value+'\' >'});return false;">Base64文本转图片</button>
+                                <div class="layui-form-item">
+                                    <input type="text" id="JsonPath" placeholder="通用: Json路径" autocomplete="on" class="layui-input">
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="text" id="JsonPath1" placeholder="PHP: Json路径" autocomplete="on" class="layui-input">
+                                </div>
+                                <textarea id="jmnr" class="layui-textarea" style="height: calc(100% - 115px);" placeholder="内容为空...."></textarea>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div class="layui-tab-item ">
+                            <iframe src="" frameborder="0" style="width:100%;height:85%;" id='httpdoc' ></iframe>
+                        </div>
+                        <div class="layui-tab-item">
+                            <textarea id="rHeaders"  placeholder="
+Date: Sat, 13 Apr 2019 13:01:05 GMT
+Content-Encoding: gzip
+Server: BWS/1.1
+Vary: Accept-Encoding
+Connection: Keep-Alive
+Content-Type: text/html
+Expires: Sat, 13 Apr 2019 13:01:00 GMT
+Cache-Control: private
+"  class="layui-textarea" ></textarea>
+                        </div>
+                        <div class="layui-tab-item">
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseArrayBuffer'])return false; rBin.value = Buffer.from(new Uint8Array(httpReturn.responseArrayBuffer)).toString('hex').toUpperCase()">显示HEX(十六进制)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseArrayBuffer'])return false; rBin.value = Buffer.from(new Uint8Array(httpReturn.responseArrayBuffer)).toString('base64')">显示(Base64)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseDataURL'])return false; rBin.value = httpReturn.responseDataURL;">显示(Base64URL)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseArrayBuffer'])return false; rBin.value = '{'+new Uint8Array(httpReturn.responseArrayBuffer).join(',')+'}'">显示(UTF8字节集)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseArrayBuffer'])return false; rBin.value = '['+new Uint8Array(httpReturn.responseArrayBuffer).join(',')+']'">显示(Uint8Array)</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(!httpReturn['responseArrayBuffer'])return false; rBin.value = '{'+iconv.encode(Buffer.from(new Uint8Array(httpReturn.responseArrayBuffer)),'GBK').join(',')+'}'">显示(GBK字节集)</button>
+                            <textarea id="rBin"  placeholder="
+十六进制: B0B2B4EFCAD0B4F3B0A2CBB9B4EFB0A2C8F8B5C2B0A1B0B4CAB1
+Base64: MTYgMDMgMDMgMDAgMjUgMTAgMDAgMD=
+Base64URL: data:text/html;base64,PGh0bWw+DQo8aG==
+字节集: {0,191,173,0}
+Uint8Array: [0,191,173,0]
+"  class="layui-textarea" ></textarea>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div id="doc" style="padding:5px" contenteditable =true></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-side layui-bg-cyan main" contenteditable="true" onkeydown="return false;" onselectstart="return false;" oncontextmenu="return false" >
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-bg-black layui-nav-tree layui-inline" id="abd" lay-filter="test">
+        </ul>
+        <ul class="layui-nav layui-bg-black layui-nav-tree layui-inline" lay-filter="test1">
+            <li class="layui-nav-item  layui-this"><a class="nl" href="#" data-id="0">另存为新栏目</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script src="../js/vconsole.min.js"></script>
+<script src="../js/dataCode.js"></script>
+
+<!-- 内置自动化脚本 -->
+<script>
+var httpReturn={};
+var runSend,defJS =
+`
+//setProxy('127.0.0.1:63697');//设置代理IP
+
+//参数提交HTTP请求之前的二次处理 
+function CallBackVar(formData){//FormData格式类型对象为参数集
+
+    return ;//不执行以下的算法例子
+
+    //本人公司经常用的验签算法--以下就是例子
+    var channel = '9998',channelKey = 'n4BADC0aNDAZubjb';//配置商户号 和 KEY
+
+    if(!formData.get('timestamp')) formData.append("timestamp",new Date().getTime()+"");//增加必须参数
+    formData.append("channel",channel);//增加必须参数
+
+    //枚举得到所有参数  并且存放进变量objData
+    var objData={},Str;
+    for (var entry of formData.entries()){
+        if(entry[1] instanceof File) {
+            //isFile = true;//文件参数 不做处理
+        }else{
+            objData[entry[0]] = entry[1];
+        }
+    }
+
+    //对JSON对象参数名字KEY键进行升序排序
+    objData = (function(d){var c={},b=Object.keys(d).sort();for(let i=0;i<b.length;i++){c[b[i]]=d[b[i]]}return c})(objData);
+    ;
+
+    //参数的值加工合并: aa|bb|cc
+    Str = (function(c){var a=[];for(var b in c){a.push(c[b])}return a})(objData).join('|');
+
+    //取MD5
+    channel = crypto.createHash('md5').update(channel).digest('hex');
+
+    //我用的php 中文只支持utf8编码
+    Str = iconv.encode(Str+channel+channelKey,'utf-8');
+
+    //取MD5 
+    Str = crypto.createHash('md5').update(Str).digest('hex');
+
+    //添加一个验签参数 JS的对象类的数据都是传指针的 这里改变 调用传进来的源变量也会跟着变
+    formData.append("sign",Str);
+
+    //参数二次处理完毕
+}
+
+
+/*
+//编码转换 注意啦  验签算法最坑就是这个 PHP JAVA一般都是UTF-8
+iconv.encode(text1.value,"GBK");//支持很多编码转换 自测
+
+//解码API
+new Buffer(text1.value,'base64').toString();//base64解码
+new Buffer(text1.value,'hex').toString();//HEX十六进制解码
+un_unicode(text1.value);//unicode解码
+decodeURIComponent(text1.value);//URL解码
+
+//编码API
+new Buffer(text1.value).toString('base64');//base64编码
+en_unicode(text1.value);//unicode编码
+new Buffer(text1.value).toString('hex');//HEX十六进制编码
+encodeURIComponent(text1.value,'hex');//URL编码
+
+//校验API PHP JAVA一般都是UTF-8编码 易语言为GBK 强烈建议调用前先转换好编码 iconv.encode(data,'utf-8');
+crypto.createHash('md5').update(text1.value).digest('hex');//取MD5
+new Buffer(crc32(text1.value)).toString('hex');//取CRC32
+crypto.createHash('sha1').update(text1.value).digest('hex');//取SHA1
+crypto.createHash('sha256').update(text1.value).digest('hex');//取SHA256
+crypto.createHash('sha512').update(text1.value).digest('hex');//取SHA512
+((text1.value.match(/\\n/g)||[]).length+1);//取行数
+//更多请查看node文档crypto插件
+
+//验签例子api
+crypto.createSign('RSA-SHA1').update(text1.value).sign("-----BEGIN RSA PRIVATE KEY-----","base64");//SHA1WithRSA的签名方式  
+(function(d){var c={},b=Object.keys(d).sort();for(let i=0;i<b.length;i++){c[b[i]]=d[b[i]]}return c})(jsonObj);//对JSON对象参数名字KEY键进行升序排序
+$.param(jsonObj);//生成abc=lingmax&name=%CE%D2&id=2
+decodeURIComponent($.param(jsonObj));生成abc=lingmax&name=我支持中文
+JSON.stringify(jsonObj);//生成JSON字符串{"aa":"LingMax"}
+(function(c){var a=[];for(var b in c){a.push(c[b])}return a})(jsonObj).join('|');//JSON对象的值 合并: aa|bb|cc
+Object.keys(jsonObj).join('|');//JSON的key键 合并: aa|bb|cc
+*/
+
+//--------------------以下的脚本不建议你们去改--------------------------------
+//获取参数
+var objData = {},formData = new FormData(sendData);
+
+//配置自定义信息
+var
+url = httpUrl.value,    //配置URL
+contentType=false,      //请求协议mimeType非常特殊
+send,                   //发送内容
+isFile=false;           //是否有文件上传
+
+//配置自定义请求参数--在这里--你只需在这里配置自动化脚本就行
+CallBackVar(formData);//调用二次处理方法
+//formData.append("sign",'abc');
+//formData.append("id",17);
+
+//通用数据转换  枚举得到所有参数  并且存放进变量objData
+for (var entry of formData.entries()){
+    if(entry[1] instanceof File) {
+        isFile = true;//发现文件参数
+    }else{
+        objData[entry[0]] = entry[1];
+    }
+}
+
+//自动选择发送协议
+contentType = DataModeTx.value;
+if(zdyPost.value != ''){
+    //自定义请求---抓包常用
+    send = zdyPost.value;
+    contentType = DataModeZdy.value;
+    if(sendMode.value == 'GET'){
+        if(url.indexOf("?")>-1){url+="&"+zdyPost.value}else{url+="?"+zdyPost.value};
+    } 
+}else if(contentType.indexOf('www')>-1 || sendMode.value == 'GET'){
+    //常用普通URL协议
+    if(contentType.indexOf('www')===-1) layer.msg('GET仅支持www-form-urlencoded: <br>已自动为您切换!');
+
+    //自动选择URL拼接
+    if(sendMode.value == 'GET'){
+        var u = $.param(objData);//如果为GET自动添加?
+        if(u==""){}else{if(url.indexOf("?")>-1){url+="&"+u}else{url+="?"+u}};
+    }else{send = $.param(objData)}
+
+}else if(contentType.indexOf('form-data')>-1){
+    //二进制流协议--文件上传专用-兼容性不错
+    send = formData;    //支持文件上传
+    isFile=false;       //文件标志取消
+    contentType= false; //默认自动为这个协议
+
+}else if(contentType.indexOf('json')>-1){
+    //JSON请求协议--公司接口常用
+    send = JSON.stringify(objData);
+}else{
+    //未知协议见鬼了
+    send = objData;
+    layer.msg('您选择了一个脚本不能识别的协议!');
+}
+
+//发现有文件上传
+if(isFile && sendMode.value != 'GET'){
+    send = formData;//支持文件上传
+    contentType= false; //默认自动为这个协议
+    layer.msg('文件上传仅支持multipart/form-data: <br>已自动为您切换!');
+}
+
+//配置HTTP请求信息
+var httpSend =
+{
+    'url': url,//URL
+    'type': sendMode.value,//请求模式
+    'data':send,//请求参数
+    'Headers':nHeaders.value,//请求协议头
+    'Cookies':nCookies.value,//请求Cookies
+    'ContentType':contentType,//请求类型
+    'withCredentials': true,//支持跨域
+    'timeout':15*1000,//超时秒数
+    //响应数据
+    'CallBack': function(s) {
+        try {
+            //请求状态
+            httpzt.innerText = s.statusText;
+            if(s.statusText=="OK"){httpzt.style.color="#5FB878"}else{httpzt.style.color="#FF5722"};
+
+            //返回代码
+            httpcode.innerText = s.status;
+            if(s.status==200){httpcode.style.color="#5FB878"}else{httpcode.style.color="#FF5722"};
+
+            //响应头
+            rHeaders.value = s.getAllResponseHeaders();
+            //代码文本框
+            RetIDE.setValue(s.responseString);
+            //JSON代码框
+            try{JSON.parse(s.responseString);editor.setText(s.responseString)}catch(e){editor.setText('{"error":"该结果不是JSON字符串!"}')};
+
+            //返回类型
+            var ls = s.getResponseHeader('Content-Type');
+            if(ls===null) ls = '*';httptype.innerText = ls;
+
+            //判断是不是图片
+            if(/pdf|octet-stream|video|image|css|audio/i.test(ls)){
+                httpdoc.src = s.responseDataURL;
+            }else{
+                //DOC资源浏览器模式
+                httpdoc.src = "about:blank";
+                
+                httpdoc.onload = function(){
+                    httpdoc.onload = null;
+                    var cc = JSON.stringify('<!-- 随机文本'+Math.random()+' -->'+s.responseString);
+                    var aa = 'var ff = '+cc+';document.write(ff);';
+                    win.eval(httpdoc, 'history.pushState({},"title'+Math.random()+'","'+httpSend.url+'#abc'+Math.random()+'");');
+                    win.eval(httpdoc, aa);
+                    
+                };
+                httpdoc.src = url2Origin(httpSend.url)+"/ProxyIp/dAs88jjdfWsxjdfs/LingMax";
+            }
+            httpzt.innerText += '请求完成!';httpqq.innerText = s.time_send;httpjx.innerText = s.time_decode;
+        } catch (e) {
+            httpzt.innerText = '请求异常! 请查看日志!';httpzt.style.color="#FF5722";console.log(e);
+        }   
+    }
+};
+try {
+    httpReturn = httpAll(httpSend);
+    httpzt.innerText = '请求中..';
+    console.log(httpReturn);
+} catch (e) {
+    httpzt.innerText = '请求失败!'+e;httpqq.innerText="---";httpjx.innerText="---";httpcode.style.color="#000";httpcode.innerText="---";httpzt.style.color="#000";    httpzt.style.color="#FF5722";console.log(e);  
+}
+
+`;
+var server = require("net").createServer(function(socket){
+    /* 发送数据 */
+    socket.on('data',function(data){
+        //console.log(data);
+        socket.write(`HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 7
+
+LingMax`,function(){});
+    });
+    
+}).listen(63697);/* 设置监听端口 */
+
+
+
+function setProxy(proxy){
+    if(proxy != 'DIRECT' && proxy){
+        proxy = 'PROXY ' + proxy;
+    }else{
+        proxy = 'DIRECT';//关闭代理
+    }
+    var config = {
+    mode: "pac_script",
+    pacScript: {
+    data:
+`function FindProxyForURL(url, host) {
+    if (shExpMatch(url,"*/ProxyIp/dAs88jjdfWsxjdfs/LingMax")) 
+        return 'PROXY 127.0.0.1:63697';
+    return '`+proxy+`';
+}`
+  }
+};
+    chrome.proxy.settings.set({value: config, scope: 'regular'},function() {});
+}
+
+setProxy('DIRECT');//禁用代理IP
+
+</script>
+
+<!-- 功能模块 -->
+<script>
+//框架初始化
+var element;
+layui.use('element', function(){
+    element = layui.element;
+    locatList();
+});
+
+
+        
+var json = {"code":200,"data":{"aa":"bb","bbb":[1,2,3]},"error":""};
+function colInput(m){
+    var fl = m.parentNode.querySelector(".sendInput");
+    if(fl.className.indexOf('sendOK')>-1){
+        $(fl).removeClass('sendOK');
+        $(m).removeClass('layui-icon-ok');
+        $(m).addClass('layui-icon-close');
+        layer.msg('该参数已禁用!');
+    }else{
+        $(fl).addClass('sendOK');
+        $(m).removeClass('layui-icon-close');
+        $(m).addClass('layui-icon-ok');
+        layer.msg('该参数已启用!');
+    }
+}
+function sendHttp() {
+    runSend = CmIDE.getValue();
+    runSend = (runSend!=null&&runSend!=''?runSend:defJS);
+    //处理要发送的参数
+    $(".sendInput").each(function(){
+        var fl = this.parentNode;
+        
+        try{
+            var ax =  this;
+            if(ax.name) ax.name =''; 
+            var nr = fl.querySelector(".bg1").value;
+            nr = nr.replace(/(^\s+)|(\s+$)/g, "");
+            if(nr && ax.className.indexOf("sendOK")>-1){
+                ax.name = nr;
+            }
+        }catch(e){
+            console.log(e);
+        }
+        
+    });
+
+    //URL检测
+    if(/^http.{0,1}:\/\//ig.test(httpUrl.value)===false){
+        layer.msg('请输入正确的HTTP地址');
+    }
+
+    try{
+        eval(runSend);
+    }catch(e){
+        layer.msg('自动化JS脚本提示报错!请检查'+e);
+        console.log(e);
+    }
+    
+} 
+function delInput(m){
+    var fl = m.parentNode;
+    fl.parentNode.removeChild(fl);
+    layer.msg('该参数已删除!');
+}
+function addFile(){
+    var abc = $(
+`
+                                <div class="inputAll">
+                                    <input class="bg1" type="text">
+                                    <input class="bg5 sendInput sendOK" type="file">
+                                    <textarea class="bg3" ></textarea>
+                                    <i class="delCss layui-icon layui-icon-delete" onclick="delInput(this);return false;" title="删除此参数!"></i>
+                                    <i class="delCss layui-icon layui-icon-ok" title="启用/禁用此参数!" onclick="colInput(this);return false;"></i>
+                                </div>
+`);
+    $(sendData).append(abc)
+    return abc;
+}
+function addInput(){
+    var abc = $(
+`
+                                <div class="inputAll">
+                                    <input class="bg1" type="text">
+                                    <textarea class="bg2 sendInput sendOK" ></textarea>
+                                    <textarea class="bg3" ></textarea>
+                                    <i class="delCss layui-icon layui-icon-delete" onclick="delInput(this);return false;" title="删除此参数!"></i>
+                                    <i class="delCss layui-icon layui-icon-ok" title="启用/禁用此参数!" onclick="colInput(this);return false;"></i>
+                                </div>
+`);
+    $(sendData).append(abc)
+    return abc;
+}
+function copyUrlE(){
+    var obj={};
+    $(".sendInput").each(function(){
+        var a = this.parentNode.querySelector(".bg1").value;
+        if(a != '') obj[a] = this.value;
+    });
+    var url=httpUrl.value,u = $.param(obj);//如果为GET自动添加?
+    if(u==""){}else{if(url.indexOf("?")>-1){url+="&"+u}else{url+="?"+u}};
+    nw.Clipboard.get().set(url,'text')
+    layer.msg('复制成功!');
+}
+function copyJsonE(){
+    var obj={};
+    $(".sendInput").each(function(){
+        var a = this.parentNode.querySelector(".bg1").value;
+        if(a != '') obj[a] = this.value;
+    });
+    nw.Clipboard.get().set(JSON.stringify(obj,undefined, 4),'text')
+    layer.msg('复制成功!');
+}
+function autoInput(){
+    var str = nw.Clipboard.get().get('text');
+
+    //抓包数据处理
+    if(null != (ls = /(?:^([A-Z]{2,8}) (.+) HTTPS?.+(?:\r\n|\n))?((?:[a-zA-Z0-9_-]+\s*:\s*.+(?:\r\n|\n))*Host\s*:\s*(.+)(?:\r\n|\n)(?:[a-zA-Z0-9_-]+\s*:\s*.+(?:\r\n|\n))*)(?:\r\n|\n)((?:.|\r\n|\n)+)/igm.exec(str))){
+
+        var abab = str.match(/Cookie\s*:\s*(.+)/);
+        if(abab) nCookies.value = abab[1];//cookies 
+
+        if(ls[5]) str = ls[5];//匹配到send数据
+
+        if(ls[2] && ls[4]){
+            httpUrl.value = 'http://'+ls[4]+ls[2];
+            if(ls[1]){
+                sendMode.value = ls[1];
+                layui.form.render("select");
+            }
+        }
+        if(ls[3]) nHeaders.value = ls[3];
+        console.log('处理抓包数据',ls);
+    }
+
+    //json
+    var j = false,
+    ls='',
+    addr=[],
+    zz=[],
+    arr=[],
+    iii=-1,
+    obj,
+    objx={},
+    fdsrdsgfdsg;
+    try{
+        j = JSON.parse(str);
+    } catch (e) {
+    }
+    if(j){
+        addr.push('');
+        zz.push(j);
+        do{
+            iii++;
+            obj = zz[iii];
+            for (const key in obj) {
+                if(addr[iii] == ''){
+                    ls = key;
+                }else{
+                    ls = addr[iii]+'['+key+']';
+                }
+                if(typeof obj[key]  == 'object' && obj[key]  != null){
+                    zz.push(obj[key]);
+                    addr.push(ls);
+                }else{
+                    objx[ls] = obj[key];
+                }
+
+            }
+        }while(zz.length > iii+1)
+        console.log('JSON处理');
+        return objx;
+    }
+    
+
+    //URL处理
+    if(/^(?:http.+?\?|[\w\/:.@*_+-]+?\?)*(?:&?([^=:\/\\]+)=([^&]*)&?)+$/igm.test(str)){
+        console.log('URL处理');
+        var ab={},ls,re = /(?:http.+?\?|[\w\/:.@*_+-]+?\?)*&?([^=:\/\\]+)=([^&]*)&?/igm;
+        while((ls=re.exec(str))!=null){
+            ab[decodeURIComponent(ls[1])] = decodeURIComponent(ls[2]);
+        }
+        return ab;
+    }
+
+    //form-data处理
+    var re = /(?:(?:\r\n|\n)*-+\w+(?:\r\n|\n)Content-Disposition\s*:)+.+?name=["']([^"']+)["'](?:\r\n|\n){2}((?:.|(?:\n|\r\n)(?!-+\w+(?:\r\n|\n)Content-Disposition\s*:))+)/igm;
+    if(re.test(str)){
+        var re = /(?:(?:\r\n|\n)*-+\w+(?:\r\n|\n)Content-Disposition\s*:)+.+?name=["']([^"']+)["'](?:\r\n|\n){2}((?:.|(?:\n|\r\n)(?!-+\w+(?:\r\n|\n)Content-Disposition\s*:))+)/igm;
+        var ab={},ls;
+        while((ls=re.exec(str))!=null){
+            console.log(ls);
+            ab[ls[1]] = ls[2];
+        }
+        console.log('form-data处理');
+        return ab;
+    }
+
+
+    //自动化处理html
+    var add = document.createElement('div');
+    add.innerHTML = nw.Clipboard.get().get('html');
+    tm = add.querySelector('TABLE');
+    if(tm && tm['tagName'] == 'TABLE') {//表格
+        var array = tm.rows,array1,arr,ls = '',fgf="|",hhf="\r\n";
+        for (let index = 0; index < array.length; index++) {
+            array1 = array[index].cells;
+            ls += fgf;
+            for (let index1 = 0; index1 < array1.length; index1++) {
+                arr = array1[index1];
+                ls += (arr.innerText+'').replace(/[\r\n]/g,"")+fgf; 
+            }
+            ls += hhf;
+        }
+        //table占有4成
+        if(tm.innerHTML.length / str.length > 0.4) {
+            str = ls;
+            console.log('自动处理html的table');
+        }
+    }else{
+        //发现并且处理 处理html
+        add.innerHTML = str;
+        if(add.getElementsByTagName('*').length > 4) {
+            str = add.innerText;
+            console.log('自动处理html');
+        }
+    }
+    document.body.appendChild(add);//将a追加到页面上
+    document.body.removeChild(add);//将a从页面上删除
+    delete add;
+
+    var 
+    r_fgf = '[\\-\\\\|\\/:\\s\\^$#@!~%&=*\\r\\n"\'><;?,+`(){}\\[\\]]',//分隔符
+    r_name = '[a-zA-Z][a-z0-9A-Z_.\\[\\]]{1,30}',//变量名
+    ls,
+    arr=[],
+    sdfasdf;
+    //r_fgf = '[|]';
+    //匹配字段和说明
+    var re = [
+        {
+            'Ex':"^("+r_fgf+'*('+r_name+')('+r_fgf+'|$))+',//验证分割类型|abc|cdr|bbb|
+            "val":r_fgf+'*('+r_name+')(?:'+r_fgf+'|$)'
+        },
+        {
+            'Ex':"^("+r_fgf+'*('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+)(?='+r_fgf+'+('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+?)|$))+',//验证分割类型|abc|array|内容|bbb|string|内容
+            "val":r_fgf+'*('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+)(?='+r_fgf+'+('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+?)|$)'
+        },
+        {
+            'Ex':"^("+r_fgf+'*('+r_name+')('+r_fgf+'+|$)(.+)(?='+r_fgf+'+('+r_name+')'+r_fgf+'+(.+?)|$))+',//验证分割类型|abc|内容|bbb|内容
+            "val":r_fgf+'*('+r_name+')'+r_fgf+'+(.+)(?='+r_fgf+'+('+r_name+')'+r_fgf+'+(.+?)|$)'
+        },
+        {
+            'Ex':"("+r_fgf+'*('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+?)(?='+r_fgf+'|$)([\\r\\n]|.)*?)+',//验证分割类型|abc|array|内容|bbb|string|内容
+            "val":r_fgf+'*('+r_name+')'+r_fgf+'+[a-zA-Z/]+'+r_fgf+'+(.+?)(?='+r_fgf+'|$)'
+        },
+        {
+            'Ex':"("+r_fgf+'*('+r_name+')('+r_fgf+'+|$)(.+?)(?='+r_fgf+'|$)([\\r\\n]|.)*?)+',//验证分割类型|abc|内容|bbb|内容
+            "val":r_fgf+'*('+r_name+')'+r_fgf+'+(.+?)(?='+r_fgf+'|$)'
+        },
+        {
+            'Ex':"([\\r\\n]|.)*?("+r_fgf+'*('+r_name+')'+r_fgf+'*(.+)('+r_fgf+'|$))+',//综合类型
+            "val":r_fgf+'*('+r_name+')'+r_fgf+'*(.+)(?:'+r_fgf+'|$)'
+        },
+    ];
+    for (let i = 0; i < re.length; i++) {
+        re[i].Ex = new RegExp(re[i].Ex,'gm');
+        re[i].val = new RegExp(re[i].val,'gm');
+    }
+    for (let i = 0; i < re.length; i++) {
+        //console.log(re[i].Ex.toString());
+        if((ls = re[i].Ex.exec(str))==null)continue;
+        //console.log(ls ,ls[0].length , str.length,ls[0], str);
+        if(ls[0].length == str.length){
+            var ab = {};
+            while((ls = re[i].val.exec(str))!=null){
+                //console.log(ls);
+                if(ls[2] == undefined){
+                    ls[2] = '';
+                }
+                ab[ls[1]] = ls[2];
+            }
+            arr.push(ab);
+            //console.log(i,re[i].Ex.toString());console.log(re);
+            return ab;
+        }
+    }
+    return {};
+}
+
+function autoStr(){
+    var obj = autoInput();
+    console.log(obj);
+    for (var key in obj) {
+        var m;
+        m = addInput()[0];
+        //console.log(m);
+        m.querySelector(".bg1").value = key;
+        m.querySelector(".bg3").value = obj[key];
+        m.querySelector(".bg2").value = obj[key];
+    }
+
+}
+
+function saveInput(){
+    if(inputId.value==''){
+        //另存为
+        newSaveInput();
+        return;
+    }
+    //保存
+    db.run('update post set `name` = ?, `send` = ?, `cookies` = ?, `headers` = ?, `js` = ?, `doc` = ?, `url` = ?, `pid` = ?, `sendMode` = ?, `DataModeTx` = ?, `zdyPost` = ? where id = '+parseInt(inputId.value),getInput(),function (err) {
+    if (err) {
+        layer.msg('保存失败!!!');
+        console.log(err);
+    } else {
+        locatList();
+        layer.msg('成功!');
+    }
+})
+}
+
+function newSaveInput(){
+    //另存为
+    Gvar['newSaveInput']=true;
+    $('.main').focus();
+}
+
+function getInput(){
+    var ls,sendX={};
+    $(".sendInput").each(function(){
+        var key,fl = this.parentNode;
+        var nr = fl.querySelector(".bg1").value;
+        nr = nr.replace(/(^\s+)|(\s+$)/g, "");
+        if(nr.length > 0){
+            ls = this.value;
+            if(this.type == 'file') ls = '[object file]';
+            sendX[nr] = [ls,this.className.indexOf('sendOK')>-1,fl.querySelector(".bg3").value];
+        }
+    });
+    sendX =JSON.stringify(sendX);
+    var jsdm = CmIDE.getValue();
+    if(jsdm == defJS) jsdm == '';
+    return [
+        httpName.value,
+        sendX,
+        nCookies.value,
+        nHeaders.value,
+        jsdm,
+        doc.innerHTML,
+        httpUrl.value,
+        pid.value,
+        sendMode.value,
+        DataModeTx.selectedIndex,
+        zdyPost.value
+    ];
+}
+
+function newSaveInput2(){
+    //真正另存为
+    db.run('INSERT INTO post ("name", "send", "cookies", "headers", "js", "doc", "url", "pid", "sendMode", "DataModeTx", "zdyPost") VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)',getInput(),function(err){
+        if (err) {
+            layer.msg('保存失败!!!');
+            console.log(err);
+        } else {
+            db.get('select last_insert_rowid() as id',[],(err,row)=>inputId.value = row['id']);
+            locatList();
+            layer.msg('成功!');
+        }
+    })
+}
+
+function delSaveInput(){
+    if(inputId.value=='') {
+        layer.msg('该接口未保存!无法删除');
+        return;
+    }
+    var sl = 0 ,arr=[];
+    //异步接收结果
+    var ybjg = function (){
+        if(!confirm('是否删除'+arr.length+'个接口?')) return;
+        db.run('delete from post where id in('+arr.join(',')+')',[],function (err) {if(err) {console.log(err);layer.msg('抛出异常了!'+err);return;}inputId.value=''; locatList();});
+    }
+
+    var xunh = function(idd){
+        sl++;
+        db.all('select * from post where pid = '+idd,[],function (err,rows){
+            if(err) {console.log(err);layer.msg('抛出异常了!'+err);return;}
+            for (val in rows){
+                arr.push(rows[val]['id']);
+                xunh(rows[val]['id']);
+            }
+            sl--;
+            if(sl === 0)ybjg();
+        });
+    }
+    arr.push(inputId.value);
+    xunh(inputId.value);
+}
+
+function cilckMode(id) {
+    db.get('select * from post where id = '+parseInt(id),[],(err,data)=>{
+        if(err) { console.log(err);return false};
+        inputId.value=data.id;
+        httpName.value=data.name;
+        $('#sendData .inputAll').remove();
+        var m,sendX = {};
+        try {sendX = JSON.parse(data.send);} catch (e) {}
+        for (var key in sendX) {
+            //if (!sendX.hasOwnProperty(key)) continue;
+            //console.log(sendX[key]);
+            if(sendX[key][0] == '[object file]'){
+                m = addFile()[0];
+            }else{
+                m = addInput()[0];
+            }
+            //console.log(sendX[key],m);
+            m.querySelector(".bg1").value = key;
+            m.querySelector(".bg3").value = sendX[key][2];
+            if(sendX[key][0] != '[object file]'){
+                m.querySelector(".bg2").value = sendX[key][0];
+            }
+            if(sendX[key][1] !== true){
+                m = m.querySelector(".layui-icon-ok");
+                $(m).removeClass('layui-icon-ok');
+                $(m).addClass('layui-icon-close');
+            }
+        }
+        nCookies.value= data.cookies;
+        nHeaders.value = data.headers;
+        if(data.js==''||data.js===null)data.js=defJS;
+        CmIDE.setValue(data.js);
+        doc.innerHTML = data.doc;
+        httpUrl.value = data.url;
+        pid.value = data.pid;
+        sendMode.value = data.sendMode;
+        DataModeTx.selectedIndex = data.DataModeTx;
+        zdyPost.value = data.zdyPost;
+        layui.form.render("select");
+    });
+}
+
+function locatList(){
+    abd.innerHTML ='';
+    var iii=0;
+    var addModel = function(dom,lspid){
+        if(lspid == 0){return false;}
+        iii++;
+        db.all('select * from post where pid = '+parseInt(lspid),[],(err,data)=>{
+            
+            if(err) { console.log(err);return false};
+            var ls;
+            for (let i = 0; i < data.length; i++) {
+                data[i];
+                ls = $(`
+                <dl class="layui-nav-child" >
+                    <dd class="ddab">
+                        <a href="#"  data-id="`+data[i].id+`"  class="nl">`+htmlSafe(data[i].name)+`</a>
+                    </dd>
+                </li>
+                `)[0];
+                $(dom).append(ls);
+                addModel(ls.querySelector('.ddab'),data[i].id)
+            }
+            iii--;
+            if(iii==0)cgcg();
+        });
+    };
+    iii++;
+    db.all('select * from post where pid = 0',[],(err,data)=>{
+        if(err) { console.log(err);return false};
+        var ls;
+        for (let i = 0; i < data.length; i++) {
+            data[i];
+            ls = $(`
+            <li class="layui-nav-item">
+                <dd class="ddab">
+                    <a href="#"  data-id="`+data[i].id+`"   class="nl">`+htmlSafe(data[i].name)+`</a>
+                </dd>
+            </li>
+            `)[0];
+            $(abd).append(ls);
+            addModel(ls.querySelector('.ddab'),data[i].id)
+        }
+        iii--;
+        if(iii==0)cgcg();
+    });
+    var cgcg = function(){
+        element.render('nav', 'test');
+        //点击事件触发新建保存
+        $('.layui-nav .nl').click(function(){
+            if(Gvar['newSaveInput'] && confirm('是否选择该目录保存?')){
+                Gvar['newSaveInput']=false;
+                pid.value=this.getAttribute('data-id');
+                newSaveInput2();
+            }else{
+                cilckMode(this.getAttribute('data-id'));
+            }
+        });
+    };
+
+}
+
+</script>
+
+<!-- 代码编辑器初始化 -->
+<script>
+//CM.setValue('aaabb');
+//自动化脚本
+var CmIDE = CodeMirror(xhxxide,
+{
+    value: defJS,
+    mode: "javascript",
+    lineNumbers: true,
+    extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "ambiance",//主题
+    sadfasgfasdgffd: ""
+});
+
+//结果
+var RetIDE = CodeMirror(retide,
+{
+    value: JSON.stringify(json),
+    mode: "javascript",
+    lineNumbers: true,
+    extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "ambiance",//主题
+    sadfasgfasdgffd: ""
+});
+$('.diogflagfjdh').removeClass('layui-show');
+</script>
+
+<!-- Json编辑器 JM  -->
+<script>
+var options = {
+'modes': ['text', 'code', 'tree', 'form', 'view'],
+'mode': 'view',
+//ace: ace,
+'onEvent':function(node, event) {
+    if ("click" === event.type && node.field !== null){
+        var ls = editor.node.getValue(),pp='',ll='',caa='';
+        for (let index = 0; index < node.path.length; index++) {
+            if(ls instanceof Array){
+                pp += '['+node.path[index]+']';
+            }else{
+                pp += ll+node.path[index]+'';
+            }
+            ls = ls[node.path[index]];
+            ll = '.';
+            caa += '["'+node.path[index]+'"]';
+        }
+        if(ls+ '' === '[object Object]' || ls instanceof Array){
+            ls = JSON.stringify(ls,undefined, 4);
+        }
+        JsonPath.value = pp ;
+        JsonPath1.value = caa;
+        jmnr.innerText = ls;
+    } 
+}
+};
+
+var editor = new JSONEditor(jsoneditor, options, json);
+//$('.drgsdhtfhsd').removeClass('layui-show');
+
+</script>
+
+<!-- 杂项 -->
+<script>
+    //打开新网页全截取下来
+    win.on('new-win-policy', function (frame, url, policy) {
+        console.log(arguments,this);
+        //if(frame===null) frame =window;
+        policy.forceCurrent();//忽略
+    });
+</script>
+
+</html>

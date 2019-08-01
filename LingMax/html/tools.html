@@ -1,0 +1,396 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        /*垂直居中 靠右 的div*/
+        
+        .py_right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+        }
+        
+        .color_qj_red {
+            color: #FF5722;
+        }
+        
+        .color_qj_green {
+            color: #5FB878;
+        }
+        
+        #nxxc {
+            width: 100%;
+            height: 100%;
+        }
+
+        .py_right .layui-icon:hover{
+            font-size: 1.5em;
+            border-width: 1px;
+            border-style: dashed;
+        }
+
+        .layui-colla-title:hover{
+            background-color:inherit !important;
+        }
+
+        .py_right button{
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .py_right a{
+            margin-right: 5px;
+        }
+        .xh-body{
+            width: calc( 100% - 40px );
+            height: calc( 100% - 40px );
+            padding: 20px;
+        }
+        .fftt{  
+            position: absolute;
+            left: -999999px;
+        }
+    </style>
+</head>
+<div class='fftt'>
+    <div class="xh-body">
+        <!-- 内容主体区域 -->
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" id="sort" required lay-verify="required" placeholder="从大到小" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="namex" required lay-verify="required" placeholder="程序名字-作用" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">主程序路径</label>
+            <div class="layui-input-block">
+                <input type="text" id="mainpath" required lay-verify="required" placeholder="module/tools/xxx.exe" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">运行参数</label>
+            <div class="layui-input-block">
+                <input type="text" id="mainrun" required lay-verify="required" placeholder="-q yes" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">下载地址</label>
+            <div class="layui-input-block">
+                <input type="text" id="httppath" required lay-verify="required" placeholder="http://a.cn/a.zip.rar.7z.tar" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">保存路径</label>
+            <div class="layui-input-block">
+                <input type="text" id="filepath" required lay-verify="required" placeholder="module/tools/Edbug/Edbug.zip" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">解压密码</label>
+            <div class="layui-input-block">
+                <input type="text" id="pwd" required lay-verify="required" placeholder="默认为空" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            简介--图片请插入网络资源文件(穷,没上传功能))
+            <hr class="layui-bg-red">
+            <textarea id="contentx" style="width:100%; height: 300px;"></textarea>
+        </div>
+
+        <blockquote class="layui-elem-quote">
+            1、本程序采用相对路径 : 以安装目录的resource文件夹为中心主目录<br>
+            2、例如module/x.exe就等于-程序安装目录/resource/module/x.exe<br>
+            3、同样也支持绝对路径 : 例如C:\abc\aaa.exe 不存在的目录自动创建
+        </blockquote>
+        <blockquote class="layui-elem-quote">
+            1、本程序采用自动解压 : 下载完成后,如果没有发现[主程序路径]的文件,就会把刚下载好的文件在当前目录下解压开来<br>
+            2、本程序采用迅雷P2P下载 : P2P有部分上传流量属于正常<br>
+            3、本程序采用WinRAR解压 : WinRAR支持解压的文件都可以
+        </blockquote>
+    </div>
+</div>
+<body>
+    <div id="nxxc">
+
+    </div>
+</body>
+<script src="../js/jquery-3.3.1.min.js"></script>
+
+<script src="../js/function.js"></script>
+<script src="../js/tools.js"></script>
+
+
+<script>
+var editor,layedit;
+</script>
+<script>
+    var layedit,
+        edit_i,
+        da,
+        ijc = 0, //全局下载数
+        csh,
+        classx = window.location.hash.slice(1);
+    //初始化
+    $(function() {
+        db.all('select * from obj where su = -1 and classx = ' + classx + ' order by sortx desc', [], function(err, rows) {
+            local_tools(rows, $(nxxc));
+        });
+
+        csh = function() {
+            layui.use('element', function() {
+                var element = layui.element;
+                element.init();
+                layedit = layui.layedit;
+            });
+
+
+            //阻止鼠标穿透
+            $('.py_right').click(function() {
+                event.stopPropagation();
+            });
+            //编辑
+            $('.webedit').click(function() {
+                console.log(this.parentNode);
+                var edit_id = this.parentNode.getAttribute("data-path");
+                layer.open({
+                    offset: ['10px', '10px'],
+                    resize: true,
+                    area: ['700px', '450px'],
+                    type: 1, 
+                    content: $('.xh-body'),//+this.parentNode.parentNode.getAttribute("data-path"),
+                    btn: ['保存修改', '取  消' ,'新建子项', '新建同级'],
+                    //加载完毕
+                    success: function(layero, index){
+                        edit_i  = layedit.build('contentx'); //建立编辑器
+                        db.get('select * from obj where id = ' + edit_id , [], function(err, rows) {
+                            var dxh = rows;
+                            namex.value = dxh.name;
+                            mainrun.value = dxh.run;
+                            sort.value = dxh.sortx;
+                            layedit.setContent(edit_i,dxh.recommend,false);
+                            mainpath.value = dxh.path;
+                            filepath.value = dxh.file_path;
+                            pwd.value = dxh.file_pwd;
+                            httppath.value = dxh.file_http;
+                            namex.setAttribute("data-id", dxh.id);
+                            namex.setAttribute("data-classx", dxh.classx);
+                            namex.setAttribute("data-old", dxh.su);
+                        });
+                    },
+                    yes:function(index, layero){
+                        //保存修改
+                        console.log(layero, index);
+                        var lsid = namex.getAttribute("data-id"),
+                            lsclassx = namex.getAttribute("data-classx"),
+                            lsold = namex.getAttribute("data-old"),
+                            arr = [];
+
+                        if (lsid == '' || null == lsid) {
+                            layer.msg("这个节点不允许操作!");
+                            return;
+                        }
+                        arr.push(namex.value);
+                        arr.push( parseInt(sort.value));
+                        arr.push(layedit.getContent(edit_i));
+                        arr.push(mainpath.value);
+                        arr.push(mainrun.value);
+                        arr.push(filepath.value);
+                        arr.push(pwd.value);
+                        arr.push(httppath.value);
+                        arr.push(lsid);
+                        arr.push(lsclassx);
+                        db.run('update obj set name = ? , sortx = ? , recommend = ? , path = ? , run = ? , file_path = ? ,file_pwd = ? ,file_http = ? WHERE id = ? and classx = ?',arr, function (err) {
+                            if (err) {
+                                layer.msg('保存失败!!!');
+                                console.log(err)
+                            } else {
+                                namex.setAttribute("data-id", '');
+                                namex.setAttribute("data-classx", '');
+                                layer.msg('成功!');
+                                layer.close(index);
+                            }
+                        });
+                    },
+                    //新建子项
+                    btn3:function(index, layero){
+                        var lsid = namex.getAttribute("data-id"),
+                            lsclassx = namex.getAttribute("data-classx"),
+                            lsold = namex.getAttribute("data-old"),
+                            arr = [];
+                        if (lsid == '' || null == lsid) {
+                            layer.msg("这个节点不允许操作!");
+                            return;
+                        }
+
+                        arr.push(namex.value);
+                        arr.push( parseInt(sort.value));
+                        arr.push(layedit.getContent(edit_i));
+                        arr.push(mainpath.value);
+                        arr.push(mainrun.value);
+                        arr.push(filepath.value);
+                        arr.push(pwd.value);
+                        arr.push(httppath.value);
+                        arr.push(lsid);
+                        arr.push(lsclassx);
+
+                        db.run('insert into obj (name, sortx,recommend,path,run,file_path,file_pwd,file_http,su,classx) values (?,?,?,?,?,?,?,?,?,?)',arr, function (err) {
+                            if (err) {
+                                layer.msg('保存失败!!!');
+                                console.log(err);
+                            } else {
+
+                                namex.setAttribute("data-id", '');
+                                namex.setAttribute("data-classx", '');
+                                layer.msg('成功!');
+                                layer.close(index);
+                            }
+                        });
+                    },
+                    //新建同级
+                    btn4:function(index, layero){
+                        var lsid = namex.getAttribute("data-id"),
+                            lsclassx = namex.getAttribute("data-classx"),
+                            lsold = namex.getAttribute("data-old"),
+                            arr = [];
+                        if (lsid == '' || null == lsid) {
+                            layer.msg("这个节点不允许操作!");
+                            return;
+                        }
+
+                        arr.push(namex.value);
+                        arr.push( parseInt(sort.value));
+                        arr.push(layedit.getContent(edit_i));
+                        arr.push(mainpath.value);
+                        arr.push(mainrun.value);
+                        arr.push(filepath.value);
+                        arr.push(pwd.value);
+                        arr.push(httppath.value);
+                        arr.push(lsold);
+                        arr.push(lsclassx);
+
+                        db.run('insert into obj (name, sortx,recommend,path,run,file_path,file_pwd,file_http,su,classx) values (?,?,?,?,?,?,?,?,?,?)',arr, function (err) {
+                            if (err) {
+                                layer.msg('保存失败!!!');
+                                console.log(err);
+                            } else {
+                                namex.setAttribute("data-id", '');
+                                namex.setAttribute("data-classx", '');
+                                layer.msg('成功!');
+                                layer.close(index);
+                            }
+                        });
+                    },
+                }); 
+            });
+            //打开主目录
+            $('.mainpathx').click(function() {
+                db.get('select * from obj where id = ' + this.getAttribute("data-path"), [], function(err, res) {
+                    nwjs.Shell.showItemInFolder(dirxx(res.path));
+                });
+            });
+            //打开文件所在
+            $('.pathx').click(function() {
+                db.get('select * from obj where id = ' + this.getAttribute("data-path"), [], function(err, res) {
+                    nwjs.Shell.showItemInFolder(dirxx(res.file_path));
+                });
+            });
+            //用浏览器下载
+            $('.webpath').click(function() {
+                db.get('select * from obj where id = ' + this.getAttribute("data-path"), [], function(err, res) {
+                    nwjs.Shell.openExternal(res.file_http);
+                });
+            })
+            //运行或者下载
+            $('.execx').click(function() {
+                var p, tt = this;
+                tt.disabled = true;
+                db.get('select * from obj where id = ' + this.getAttribute("data-path"), [], function(err, res) {
+                    p = res;
+                    //判断文件是否存在
+                    if (fs.existsSync(dirxx(p.path))) {
+                        $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
+                        setTimeout(function() { //图标刷新BUG
+                            tt.innerHTML = '重新安装';
+                            tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
+                        }, 100);
+                        //运行
+                        system_exec('"' + dirxx(p.path) + '" ' + p.run);
+                    } else {
+                        //下载
+
+                        ijc++;
+                        tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-loading color_qj_green layui-anim layui-anim-rotate layui-anim-loop";
+                        var aab = downloadFile(p.file_http,dirxx(p.file_path),function(t){
+                            tt.disabled = false;
+                            ijc--;
+                            tt.innerText = '处理中..';
+                            clearInterval(sse);
+                            console.log(t);
+                            if(!t){
+                                //判断文件是否存在
+                                if(fs.existsSync(dirxx(p.file_path))) {
+                                    if (fs.existsSync(dirxx(p.path))) {
+                                        $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
+                                        setTimeout(function() { //图标刷新BUG
+                                            tt.innerHTML = '重新安装';
+                                            tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
+                                        }, 100);
+                                        return;
+                                    }
+
+                                    //执行解压
+                                    child_process.exec('"' + dir("data/WINRAR/WinRAR.exe") + '" -ibck -y ' + (p.file_pwd == '' ? '' : '-p' + p.file_pwd) + ' x "' + dirxx(p.file_path) + '" "' + dirxx(p.file_path, '..') + '"', function(error, stdout, stderr) {}).on('exit', function(code) {
+                                        if (fs.existsSync(dirxx(p.path))) {
+                                            tt.innerHTML = '重新安装';
+                                            tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
+                                            $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
+                                        } else {
+                                            tt.innerText = '下载安装';
+                                            tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-upload color_qj_green";
+                                            layer.alert('解压失败 请手动解压到当前目录!!再点击软件的刷新即可<br>如果是压缩文件已经损坏请删除掉!!', function(index){
+                                                nwjs.Shell.showItemInFolder(dirxx(p.file_path));
+                                                layer.close(index);
+                                            });  
+                                        }
+                                    });
+                                } else {
+                                    layer.msg('文件下载失败!');
+                                    tt.innerText = '下载安装';
+                                    tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-upload color_qj_green";
+                                }
+                            }else{
+                                layer.msg(t);
+                                tt.innerText = '下载安装';
+                                tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-upload color_qj_green";
+                            }
+                        });
+                        var sse = setInterval(() => {
+                            tt.innerText = parseFloat(aab['dowSize']/1024/1024).toFixed(2)+'Mb / '+aab['dowBFB']+'%';
+                        }, 1000);
+                    }
+
+                });
+            });
+        }
+    });
+</script>
+<script src="../layui/layui.all.js"></script>
+
+</html>

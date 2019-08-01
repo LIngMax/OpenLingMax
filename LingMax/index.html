@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<style>
+    html,
+    body {
+        background-color: #FFF;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .bna {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    
+    .psx {
+        padding: 0 !important;
+    }
+    
+    .layui-header {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    .layui-layout-admin .layui-logo {
+        color: #5FC1F2;
+    }
+    
+    iframe {
+        height: calc(100% - 3px);
+        width: 100%;
+        border: none;
+    }
+    
+    .layui-header {
+        background-image: url(img/logo.png);
+        background-repeat: no-repeat;
+        background-position: 5px 5px;
+    }
+    
+    #move {
+        width: calc( 100% - 360px);
+        height: 100%;
+        -webkit-app-region: drag;
+    }
+
+    .layui-body{
+        left: 15px;
+    }
+
+
+    .clearfix:before,
+    .clearfix:after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+    .clearfix:after {
+        clear: both;
+    }
+    .clearfix{
+        *zoom: 1;
+    }
+
+    #main,#main *{
+        outline: none;
+        cursor: pointer ;
+    }
+    #main:focus,#main:hover{
+        width: 200px;
+    }
+    #main{
+        width: 15px;
+        caret-color:transparent;
+    }
+    .layui-layout-admin .layui-footer{
+        left: 15px;
+    }
+
+</style>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div id="move"></div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left">
+                <a href="javascript: nwjs.Shell.openExternal('http://www.LingMax.top');" class="layui-logo">开发者神器库 辅助利器!!</a>
+            </ul>
+            <ul class="layui-nav layui-layout-right psx">
+                <li class="layui-nav-item bna" lay-unselect>
+                    <a href='javascript: gbsj();' title="重启软件,可以修复网络错误!!"> <i class="layui-icon layui-icon-refresh-1"></i>重载</a>
+                </li>
+                <li class="layui-nav-item ">
+                    <a href="javascript: tray.remove();nwjs.App.closeAllWindows();"> <i class="layui-icon layui-icon-close"></i> 关闭</a>
+                </li>
+                <li class="layui-nav-item bna" lay-unselect>
+                    <a href='javascript: sxwy();'> <i class="layui-icon layui-icon-refresh-1"></i> 刷新</a>
+                </li>
+                <li class="layui-nav-item " lay-unselect>
+                    <a href='javascript: win.minimize();win.setShowInTaskbar(false);'> <i class="layui-icon layui-icon-triangle-d"></i> 最小化</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black" id="main" contenteditable="true" onkeydown="return false;" onselectstart="return false;" oncontextmenu="return false" >
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-bg-cyan layui-nav-tree layui-inline" lay-filter="test">
+                    <li class="layui-nav-item">
+                        <a href="#">工具仓库(Win)</a>
+                        <dl class="layui-nav-child" id="lbx">
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsDEV.html">文本处理</a></li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/POST.html">Post表单</a></li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsFZ.html#0">脚本调试</a></li>
+                    <li class="layui-nav-item">
+                        <a href="#" data-url="#">脚本仓库</a>
+                        <dl class="layui-nav-child" id="exec_mlk">
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="#" data-url="#">常用网站</a>
+                        <dl class="layui-nav-child" id="cyz">
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/index.html">更新日志</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+
+        </div>
+        <div class="layui-footer">
+            <a href="javascript: nwjs.Shell.openExternal('http://www.LingMax.top');">
+                <!-- 底部固定区域 -->
+                开发者神器库-版本(<b id="vars"></b>) - [<b id="bbh">检查更新中...</b>] - © http://www.LingMax.top - By:LingMax
+            </a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/function.js"></script>
+<script src="js/iframes.js"></script>
+<script src="layui/layui.all.js"></script>
+<script src="js/system_open.js"></script>
+<script src="js/VP.js"></script>
+<script>
+    var ismaxmize = false,//窗口最大化标志
+    element,//layui
+    csh_count = 0,//初始化事件总数
+    csh_int = 0,//初始化完成的事件数量
+    null_null;//善后的变量
+    vars.innerHTML = fs.readFileSync('version.ini', 'utf-8');//版本号
+
+    var http = require('http');
+    //win.showDevTools();//启动调试工具
+    var tray = new nw.Tray({ title: 'Tray', icon: 'logo.png' });
+    if(localStorage['index_aabbcc'] == '1'){
+        localStorage['index_aabbcc'] = '';
+    }else{
+        //软件启动-最小化
+        win.minimize();
+    }
+    tray.on("click",function(){
+        if(window.screenTop < -30000){
+            //已经最小化
+            win.restore();
+            win.focus();
+        }else{
+            win.focus();
+            win.minimize();
+            win.setShowInTaskbar(false);
+        }
+    });
+    var menu = new nwjs.Menu();
+    menu.append(new nwjs.MenuItem({ type: 'normal', label: '退出本工具',click: function(){
+        tray.remove();
+        nwjs.App.closeAllWindows();
+    } }));
+    tray.menu = menu;
+    //还原窗口时在
+    win.on('restore',function(){
+        win.setShowInTaskbar(true);
+    });
+    
+    window.onunload = window.onbeforeunload = function () {
+        gbsj();
+    }
+    win.on('close', function() {
+        tray.remove();
+        this.close(true); // then close it forcely
+    });
+
+    //重载
+    function gbsj(){
+        localStorage['index_aabbcc'] = '1'
+        tray.remove();
+        //exec_exit("ThunderP2P.exe");
+        //exec_exit("MiniThunderPlatform.exe");
+        location.reload();
+    }
+    
+    //0是工具库
+    csh_count++;
+    db.all('select * from classx where classx = 0 order by sortx', [], function(err, rows) {
+        rows.forEach((val, i) => {
+            $(lbx).append('<dd><a class="nl" href="javascript:;"  data-url="html/tools.html#' + val.classid + '">' + val.name + '</a></dd>');
+        });
+        csh();
+    });
+
+    //1是常用站
+    csh_count++;
+    db.all('select * from classx where classx = 1 order by sortx', [], function(err, rows) {
+        rows.forEach((val, i) => {
+            $(cyz).append('<dd><a class="nl" href="javascript:;"  data-url="html/web.html#' + val.classid + '">' + val.name + '</a></dd>');
+        });
+        csh();
+    });
+
+    //2是命令库
+    csh_count++;
+    db.all('select * from classx where classx = 2 order by sortx', [], function(err, rows) {
+        rows.forEach((val, i) => {
+            $(exec_mlk).append('<dd><a class="nl" href="javascript:;"  data-url="html/exec.html#' + val.classid + '">' + val.name + '</a></dd>');
+        });
+        csh();
+    });
+
+    //启动迅雷引擎--待机进程
+    //system_exec('"' + dir("data/ThunderP2P/ThunderP2P.exe") + '" "' + dir("data/ThunderP2P/dw.epk") + '" "xhxx"')
+
+    //添加开机启动
+    if(fs.existsSync(dir('../NBuilder.exe'))){
+        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """"'+dir('../NBuilder.exe')+'""" """'+dir('../resource')+'""""' ;
+        system_exec(nodeRun);
+    }
+
+    //发送记录
+    Send_Ulast();
+
+    //get 请求外网
+    http.get('http://update.lingmax.top/update.php?version=' + vars.innerHTML,function(req,res){
+        var locat='';
+        req.on('data',function(data){
+            locat+=data;
+        });
+        req.on('end',function(){
+            bbh.innerHTML = '更新中...';
+            var aabb=false;
+            try {
+                var up = JSON.parse(locat)
+                for(var i in up) {
+                    db.run1(up[i].sql_code);
+                    eval(up[i].js_code);
+                    aabb = true;
+                }
+                if(aabb){
+                    bbh.innerHTML = '发现新版本!';
+                }else{
+                    bbh.innerHTML = '已是最新版本!';
+                }
+                
+            } catch (error) {
+                console.log(error,locat);
+                bbh.innerHTML = '更新失败';
+            }
+        });
+    });
+
+
+
+    layui.use('element', function() {
+        element = layui.element;
+    });
+
+/**
+ * @function:  载入完成后触发的事件
+ * @Author: LingMax@phh
+ * @mail: xiaohxx@qq.com
+ */
+function csh() {
+    csh_int++;
+    if(csh_int < csh_count){
+        return;//事件未触发完成
+    }
+    //窗口最大化事件--废弃
+    $(move).dblclick(function() {
+        if (ismaxmize) {
+            ismaxmize = false;
+            win.restore();
+        } else {
+            ismaxmize = true;
+            win.maximize();
+        }
+    });
+    Start_Iframes();
+    element.render('nav', 'test');
+    //开始初始化
+    $('.layui-side .nl').eq(0).click();
+}
+</script>
+<!-- <script src="js/MoveWindows.js"></script> -->
+
+
+</html>

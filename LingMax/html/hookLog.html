@@ -1,0 +1,96 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /*垂直居中 靠右 的div*/
+
+        #main{
+            padding: 10px 20px;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <textarea id="main"></textarea>
+</body>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<!-- <script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script> -->
+<script>
+
+
+//------hook------
+
+/* process.on('uncaughtException', function (err) { 
+    console.log('node抛出异常: ', err); 
+});
+   */
+$(function(){
+    window.onerror = function() {
+        // 直接将错误打印到控制台
+        console.log("浏览器抛出异常: ",arguments);
+    }
+    //----hook-----
+    //var logStr = '';//全局log捕获
+    console.log1 = console.log;
+    console.log = function() {
+        console.log1.apply(console, arguments);
+        var ls      = '',
+            logStr  = '',
+            obj     = arguments;
+
+        for (var key in obj) { 
+            try {
+                if(typeof obj[key] == "string"){
+                    //过滤字符串
+                    logStr  += ls+obj[key];
+                }else{
+                    logStr  += ls+JSON.stringify(obj[key]);
+                }
+            } catch (error) {
+                logStr += ls + '[这个参数解析出现错误]';
+            }
+            ls      = ', ';
+        }
+        //logStr += "\r\n";
+        sendLog(logStr);
+    };
+    setTimeout(function(){
+        console.log('代码执行中..未出结果之前..请勿关闭窗口');
+        try {
+            eval(localStorage['jscode']);
+        } catch (err) {
+            console.log('代码抛出异常: ', err); 
+        }
+        console.log('脚本主线程-执行完成!!');
+    },10);
+    
+   
+});
+
+/**
+ * 触发日志
+ * @param {*} logStr 
+ */
+function sendLog(logStr){
+
+    main.value = main.value+logStr+"\r\n";
+}
+</script>

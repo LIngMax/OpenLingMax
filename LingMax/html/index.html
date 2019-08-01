@@ -1,0 +1,116 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+
+        #main{
+            padding: 10px 20px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <ul class="layui-timeline">
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <div class="layui-timeline-title">功能特点---本工具可以干什么</div>
+                    <p> 特点----工具、脚本都-支持自定义添加,修改,扩展<br/>
+                        特点----资源支持联网下载,手动下载等多种方式...<br/>
+                        特点----工具是透明的web技术制作,可以在原有基础上增加自己的自定义功能<br/>
+                        <br/>
+                        增强开发----配置好自己专用的工具，在新的电脑工作环境上马上就把常用的工具下载好。<br/>
+                        增强开发----发现一些未认识的工具，提高工作效率，增强自身知识。<br/>
+                        增强开发----辅助前后端开发提升，提升全栈见解，更多功能有待发掘。请善用本工具。<br/>
+                    </p>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title">2019年6月5日</h3>
+                <p>
+                    <h2>开发者神器库4</h2>
+                    <ul>
+                        <li>文本处理-----包含多功能小按钮, 正则处理文本.....</li>
+                        <li>POST模拟-----发起HTTP请求, 可以保存接口, 自定义HTTP脚本.....</li>
+                        <li>自动脚本-----升级代码编辑框.....</li>
+                    </ul>
+                </p>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title">2019年1月15日</h3>
+                <p>
+                    <h2>开发者神器库2.0</h2>
+                    <ul>
+                        <li>开机脚本---包含多功能小脚本.....</li>
+                        <li>命令库-----存放常用的命令 [随手记录的sql shell cmd vbs node npm...]</li>
+                        <li>增强开发---NODE_脚本可以使用NW.JS的AIP; Reg可以直接使用win注册表导出的reg文件。[bat vbs ]脚本跟这里...</li>
+                    </ul>
+                </p>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title">2018年12月13日</h3>
+                <p>
+                    <h2>开发者神器库1.0</h2>
+                    <ul>
+                        <li>教程榜-包含万象教程.....</li>
+                        <li>工具库---强大工具合集 [网络工具,必备工具,激活工具,声音处理,图片处理,...]</li>
+                        <li>常用站---常用网站合集 [网页在线工具,省钱活动榜,各大框架文档,...]</li>
+                    </ul>
+                </p>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                <div class="layui-timeline-title">开发者神器库--单机版</div>
+                <p>
+                    <ul>
+                        <li>本项目本着开放性研究 / 实验使用。</li>
+                        <li>如有侵犯您的权利,敬请告知。xiaohxx@qq.com</li>
+                    </ul>
+                </p>
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script>
+    var db_classx = window.location.hash.slice(1);
+    var element;
+    layui.use('element', function(){
+        element = layui.element;
+    });
+
+//重新渲染表单
+function renderForm(){
+  layui.use('form', function(){
+   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+   form.render();
+  });
+ }
+</script>

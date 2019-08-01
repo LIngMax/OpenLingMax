@@ -1,0 +1,800 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+
+    <!-- 代码编辑器 -->
+    <link rel="stylesheet" href="../js/CM/lib/codemirror.css">
+    <script src="../js/CM/lib/codemirror.js"></script>
+    <script src="../js/CM/addon/selection/active-line.js"></script>
+    <script src="../js/CM/addon/edit/matchbrackets.js"></script>
+    <!-- <script src="../js/CM/mode/javascript/javascript.js"></script> -->
+    <!-- <script src="../js/CM/addon/hint/show-hint.js"></script> -->
+    <!-- <script src="../js/CM/addon/hint/javascript-hint.js"></script> -->
+    <!-- <link rel="stylesheet" href="../js/CM/addon/hint/show-hint.css"> -->
+    <!-- <link rel="stylesheet" href="../js/CM/theme/ttcn.css"> -->
+    <link rel="stylesheet" href="../js/CM/theme/idea.css">
+    <script src="../js/CM/addon/search/searchcursor.js"></script>
+    <script src="../js/CM/addon/scroll/annotatescrollbar.js"></script>
+    <script src="../js/CM/addon/search/matchesonscrollbar.js"></script>
+    <script src="../js/CM/addon/search/match-highlighter.js"></script>
+    <link rel="stylesheet" href="../js/CM/addon/search/matchesonscrollbar.css">
+
+    <!-- Json编辑器 JM  -->
+    <script src="../js/JM/jsoneditor-minimalist.min.js"></script>
+    <link rel="stylesheet" href="../js/JM/jsoneditor.min.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+
+        #main{
+            padding: 0px 0px;
+            
+        }
+        hr {
+            margin: 0 0 5px 0;
+        }
+        .layui-tab {
+            margin:0;
+        }
+        .CodeMirror pre{
+            font-family: Microsoft JhengHei;
+        }
+
+        .layui-tab-content {
+            padding: 2px 10px;
+        }
+
+        .layui-btn+.layui-btn {
+            margin-left: 0;
+        }
+
+        .layui-btn.layui-btn-fluid,.layui-btn-xs{
+            margin-bottom: 5px;
+        }
+        .CodeMirror {
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
+
+        .cm-matchhighlight {background-color:rgba(236, 181, 181, 0.26)}
+        .CodeMirror-selection-highlight-scrollbar {background-color: green}
+
+        /* JM json的样式修改 */
+        div.jsoneditor {
+            border: thin solid #009688;
+        }
+        div.jsoneditor-menu {
+            background-color: #009688;
+            border-bottom: 1px solid #009688;
+        }
+        /* JM json编辑器 */
+        #jsoneditor{
+            float: left;
+            width: 65%;
+            height: 85%;
+        }
+
+        /* json 属性查看控件 */
+        .jmxs{
+            float:right;
+            width: calc(35% - 6px);
+            height: 85%;
+            margin-left: 5px;
+        }
+        .layui-form-item {
+            margin-bottom: 5px;
+        }
+
+        .layui-table-header{
+            display: none;
+        }
+        .layui-table-cell {
+            line-height: 15px;
+            height: 15px;
+            padding: 0;
+        }
+        .layui-table-view .layui-table td, .layui-table-view .layui-table th {
+            padding: 2px 0px;
+        }
+
+        .layui-layer-aabb .layui-layer-input {
+            width: 500px !important;
+        }
+        .layui-table-click{
+            background-color: #D5D5D5;
+        }
+    </style>
+</head>
+
+<body>
+<div id="text1" ondblclick="/*StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));$('#pljm').click();*/" ></div>
+    <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+            <li>文本转码</li>
+            <li class="layui-this">正则处理</li>
+            <li>JSON解析</li>
+        </ul>
+        <div class="layui-tab-content" >
+            <div class="layui-tab-item">
+                <div id="main">
+<label for="acca">全局编码(带*按钮)</label>
+<select id="charSet"  name="acca">
+    <option value="UTF-8">UTF-8</option>
+    <option value="gb2312">gb2312</option>
+</select>
+&nbsp;&nbsp;&nbsp;
+<button class="layui-btn  layui-btn-xs" onclick="StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));">粘贴</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = ''; StartIDE.setValue(''); ">清空</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = (StartIDE.getValue().match(/\n/g)||[]).length+1;">取行数</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.localeCompare(y, 'zh-CN');}).join('\n');">↑ 升序</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.localeCompare(y, 'zh-CN');}).reverse().join('\n');">↓ 降序</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').reverse().join('\n');">倒序</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('').reverse().join('');">反转</button>
+<button class="layui-btn layui-btn-xs" onclick="text2.value = array_uniq(StartIDE.getValue().split('\n')).join('\n');">去重复</button>
+<button class="layui-btn layui-btn-xs" onclick="try{StartIDE.setValue(JSON.stringify(JSON.parse(StartIDE.getValue()),undefined, 4));}catch(e){layer.msg('JSON抛出异常:<br>'+e);} return false;">Json美化</button>
+<button class="layui-btn layui-btn-xs" onclick="layer.open({offset:  ['100px', '100px'],type: 1, content: '<img src=\''+(/^data:image\/\w+;base64,/.test(StartIDE.getValue())? '':'data:image/png;base64,')+StartIDE.getValue()+'\' >'});return false;">Base64转图片</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(StartIDE.getValue().toUpperCase());">转大写</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(StartIDE.getValue().toLowerCase());">转小写</button>
+
+
+<button class="layui-btn  layui-btn-xs" onclick="var aacc = text2.value;text2.value = StartIDE.getValue(); StartIDE.setValue(aacc); ">↑交换↓</button>
+<hr class="layui-bg-green">
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(CSSencode(StartIDE.getValue()));">css压缩</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(CSSdecode(StartIDE.getValue()));">css格式化</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue((new Packer).pack(StartIDE.getValue(), 1, 0));">JS加密</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue((new Packer).pack(StartIDE.getValue(), 0, 0));">JS压缩</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(js_beautify(StartIDE.getValue()));">JS格式化</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue((new Packer).pack(StartIDE.getValue(), 0, 0));">JSON压缩</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(js_beautify(StartIDE.getValue()));">JSON格式化</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue((new Packer).pack(StartIDE.getValue(), 0, 0));">HTML压缩</button>
+<button class="layui-btn layui-btn-xs" onclick="StartIDE.setValue(html_beautify(StartIDE.getValue()));">HTML格式化</button>
+<hr class="layui-bg-green">
+
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = decodeURIComponent(StartIDE.getValue());">URL解码</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = new Buffer(StartIDE.getValue(),'base64').toString();">base64解码*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = un_unicode(StartIDE.getValue());">Unicode(usc2)解码</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = cS(new Buffer(StartIDE.getValue(),'hex')).toString();">HEX解码*</button>
+<button class="layui-btn  layui-btn-xs" id="pljm" >批量解码</button>
+&nbsp;&nbsp;●&nbsp;&nbsp;
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = encodeURIComponent(StartIDE.getValue(),'hex');">URL编码</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = new Buffer(StartIDE.getValue()).toString('base64');">base64编码*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = en_unicode(StartIDE.getValue())">Unicode(usc2)编码</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = new Buffer(StartIDE.getValue()).toString('hex');">HEX编码*</button>
+<button class="layui-btn  layui-btn-xs" id="plbm" >批量编码</button>
+<hr class="layui-bg-green">
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = require('crypto').createHash('md5').update(StartIDE.getValue()).digest('hex');">取MD5*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = crc32(eS(StartIDE.getValue()))">取CRC32*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = require('crypto').createHash('sha1').update(eS(StartIDE.getValue())).digest('hex');">取SHA1*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = require('crypto').createHash('sha256').update(eS(StartIDE.getValue())).digest('hex');">取SHA256*</button>
+<button class="layui-btn  layui-btn-xs" onclick=" text2.value = require('crypto').createHash('sha512').update(eS(StartIDE.getValue())).digest('hex');">取SHA512*</button>
+<button class="layui-btn  layui-btn-xs" id="plqz">批量取值</button>
+&nbsp;&nbsp;●&nbsp;&nbsp;
+<button class="layui-btn layui-btn-xs " onclick="text2.value = '{'+eS(StartIDE.getValue()).join(',')+'}'">转为字节集*</button>
+                            
+<hr class="layui-bg-green">
+<textarea id="text2"  placeholder="" rows="8" class="layui-textarea" wrap="off" style="overflow:scroll;" ></textarea>           
+                </div>
+            </div>
+            <div class="layui-tab-item layui-show">
+                <div style="width:100%">
+                    <div id="fhdfghf" style="width:calc(150px + 12%); display: inline-block;vertical-align: top;">
+                        <table id="website" lay-filter="demo"></table>
+                    </div>
+                    <div style="width: calc(45% - 153px); display: inline-block;vertical-align: top;">
+                        <div id="textZZ" ></div>
+                    </div>
+                    <div style="width:205px; display: inline-block;padding: 0;  margin: 0; vertical-align: top;">
+                        <button class="layui-btn layui-btn-xs " onclick="SearchNext()"><i class="layui-icon layui-icon-search"></i> 查找内容 </button>
+                        <button class="layui-btn layui-btn-xs" onclick="replaceText()">替换全部</button>
+                        <button class="layui-btn layui-btn-xs" onclick="replaceAllText()">匹配结果</button>
+                        <button class="layui-btn layui-btn-xs " onclick="SearchBz()"><i class="layui-icon layui-icon-star-fill"></i> 标记所有 </button>
+                        <button class="layui-btn layui-btn-xs" onclick="indexAll()">查子匹配</button>
+                        <button class="layui-btn layui-btn-xs" onclick="var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();var arr = StartIDE.getValue().split('\n');for (let i = 0; i < arr.length; i++){aaa += StartStr+arr[i]+EndStr+'\r\n';}StartIDE.setValue(aaa);"> 合成头尾 </button>
+                        <br>
+                        <input id='StartN' type="number" placeholder="开始0" value="" style="width: 68px;display: inline-block;" >
+                        <input id='EndN' type="number" placeholder="次数" value="" style="width: 68px;display: inline-block;" >
+                        <button class="layui-btn layui-btn-xs" onclick="if(EndN.value*1<1){layer.msg('次数小于1');return false;} ;var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();for (let i = (StartN.value*1); i < (EndN.value*1) + (StartN.value*1); i++){aaa += StartStr+i+EndStr+'\r\n';}StartIDE.setValue(aaa)">生成数据</button>
+                        <div class="layui-form">
+                            <input type="checkbox" id="ZzKt" lay-skin="switch" lay-text=".*|正则" onclick="ee=false" checked>
+                            <input type="checkbox" id="AaKt" lay-skin="switch"  lay-text="Aa|大小写" onclick="ee=false">
+                            <input type="checkbox" id="LinKt" lay-skin="switch"  lay-text="多行|多行" onclick="ee=false" >
+                        </div>
+                        <br>
+                        <button class="layui-btn layui-btn-xs" onclick="newTable()"><i class="layui-icon layui-icon-template-1"></i> 新建记录</button>
+                        <button class="layui-btn layui-btn-xs" onclick="upTable()">修改记录</button>
+                        <button class="layui-btn layui-btn-xs" onclick="delTable()">删除记录</button>
+                    </div>
+                    <div style="width:calc(43% - 215px); display: inline-block;vertical-align: top;">
+                        <div id="textEnd" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item drgsdhtfhsd">
+                <div id="jsoneditor"></div>
+                <div class="jmxs">
+                    <button class="layui-btn layui-btn-xs abc layui-btn-normal" onclick="try{JSON.parse(StartIDE.getValue());editor.setText(StartIDE.getValue())}catch(e){layer.msg('JSON抛出异常:<br>'+e);} return false;">Json加载</button>
+                    <button class="layui-btn layui-btn-xs abc" onclick="jmnr.value = JSON.stringify(JSON.parse(jmnr.value),undefined, 4);return false;">Json美化</button>
+                    <button class="layui-btn layui-btn-xs abc" onclick="layer.open({offset:  ['100px', '100px'],type: 1, content: '<img src=\''+(/^data:image\/\w+;base64,/.test(jmnr.value)? '':'data:image/png;base64,')+jmnr.value+'\' >'});return false;">Base64文本转图片</button>
+
+                    <div class="layui-form-item">
+                        <input type="text" id="JsonPath" placeholder="通用: Json路径" autocomplete="on" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <input type="text" id="JsonPath1" placeholder="PHP: Json路径" autocomplete="on" class="layui-input">
+                    </div>
+                    <textarea id="jmnr" class="layui-textarea" style="height: calc(100% - 115px);" placeholder="内容为空...."></textarea>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../js/dataCode.js"></script>
+<script src="../layui/layui.all.js"></script>
+<!-- 编码模块 -->
+<script>
+    var db_classx = window.location.hash.slice(1);
+    var element;
+    var fgf = function(va){return "\r\n-------------------"+va+"-------------------\r\n"};
+    layui.use('element', function(){
+        element = layui.element;
+    });
+    $('#pljm').click(function(){
+        if(StartIDE.getValue() == '' || StartIDE.getValue() == jljs['v_bjq'] ){
+            StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));
+        }
+        
+        text2.value = '结果: ';
+        text2.value += fgf('base64解码');
+        try{
+            text2.value += eS(new Buffer(StartIDE.getValue(),'base64')).toString();
+        }catch(err)
+        {
+            text2.value += '"解码失败!!"'
+        }
+        text2.value += fgf('HEX十六进制解码');
+        try{
+            text2.value += eS(new Buffer(StartIDE.getValue(),'hex')).toString();
+        }catch(err)
+        {
+            text2.value += '"解码失败!!"'
+        }
+        text2.value += fgf('unicode解码') + un_unicode(StartIDE.getValue());
+
+        //这个会抛异常
+        text2.value += fgf('URL解码');
+        try{
+            text2.value += decodeURIComponent(StartIDE.getValue());
+        }catch(err)
+        {
+            text2.value += '"解码失败!!"'
+        }
+    });
+    $('#plbm').click(function(){
+        if(StartIDE.getValue() == '' || StartIDE.getValue() == jljs['v_bjq'] ){
+            StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));
+        }
+        text2.value = '结果: ';
+        text2.value += fgf('base64编码') + eS(StartIDE.getValue()).toString('base64');
+        text2.value += fgf('unicode编码') + en_unicode(StartIDE.getValue());
+        text2.value += fgf('HEX十六进制编码') + eS(StartIDE.getValue()).toString('hex');
+        text2.value += fgf('URL编码') + encodeURIComponent(StartIDE.getValue(),'hex');
+    });
+    $('#plqz').click(function(){
+        if(StartIDE.getValue() == '' || StartIDE.getValue() == jljs['v_bjq'] ){
+            StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));
+        }
+        text2.value = '结果: ';
+        text2.value += fgf('取MD5') + require('crypto').createHash('md5').update(eS(StartIDE.getValue())).digest('hex');
+        text2.value += fgf('取CRC32') + crc32(eS(StartIDE.getValue()));
+        text2.value += fgf('取SHA1') + require('crypto').createHash('sha1').update(eS(StartIDE.getValue())).digest('hex');
+        text2.value += fgf('取SHA256') + require('crypto').createHash('sha256').update(eS(StartIDE.getValue())).digest('hex');
+        text2.value += fgf('取SHA512') + require('crypto').createHash('sha512').update(eS(StartIDE.getValue())).digest('hex');
+    });
+    //unicode转中文
+    function un_unicode(v){
+        var r = v.match(/[%\\]u[0-9a-fA-F]{4}/g);
+        if(r == null) {
+            return v;
+        }
+        for(var i = 0; i < r.length; i++){
+            v = v.replace(r[i],unescape(r[i].replace("\\u","%u")));
+        }
+        return v;
+    }
+
+
+/**
+ * 中文转unicode
+ * v      {srting}  内容
+ * charA  {bool}    是否编码全部字符 默认只编码中文
+ */
+function en_unicode(v,charA=false){
+    var ascii = "";
+    for (var i = 0; i < v.length; i++) {
+        var code = Number(v[i].charCodeAt(0));
+        if (charA || code > 127) {
+            var charAscii = code.toString(16);
+            charAscii = new String("0000").substring(charAscii.length, 4) + charAscii;
+            ascii += "\\u" + charAscii;
+        } else {
+            ascii += v[i];
+        }
+    }
+    return ascii;
+}
+    
+//解码
+function dS(data){
+    return iconv.decode(new Buffer(data),charSet.value);//转换编码
+}
+
+//编码
+function eS(data){
+    return iconv.encode(new Buffer(data),charSet.value);//转换编码
+}
+
+
+//重新渲染表单
+function renderForm(){
+  layui.use('form', function(){
+   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+   form.render();
+  });
+}
+
+//刷新正则数据列表
+layui.use('table', function() {
+     //创建表格
+     layui.table.render({
+        elem: '#website',
+        limit:7,
+        page: {//开启分页
+            'layout':['prev', 'page', 'next'],
+            'groups':2,
+        }, 
+        cols: [
+            [
+            {
+                field: 'name',
+                title: '名字',
+                //fixed: 'left',
+                //unresize: true,
+                //type:'radio'
+            }]
+        ],
+        data: [],
+        done: function(res, curr, count){
+            //如果是异步请求数据方式，res即为你接口返回的信息。
+            //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+            //console.log(arguments);
+            for (let i = 0; i < res.data.length; i++) {
+                if(res.data[i]['id'] === ddaa['id']){
+                    //console.log(res.data[i]); 
+                    $('#fhdfghf table tr[data-index="'+res.data[i]['LAY_TABLE_INDEX']+'"]').addClass('layui-table-click').siblings().removeClass('layui-table-click');
+                }
+            }
+
+            //得到当前页码
+            //console.log(curr); 
+            
+            //得到数据总量
+            //console.log(count);
+        }
+    });
+    layui.table.on('row(demo)', function(obj){
+        //console.log(obj);
+        //console.log(obj.tr) //得到当前行元素对象
+        //console.log(obj.data) //得到当前行数据
+        var arr = (obj.data.exec+'').split("\n\n#=#以下内容是替换项#=#\n\n");
+        if(arr.length != 2) return ;
+        ddaa = obj.data;
+        ZzIDE.setValue(arr[0]);
+        EndIDE.setValue(arr[1]);
+        
+         //标注选中样式
+        obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+        //layui.table.cache.website[0]
+        //layui.table.checkStatus(ddaa['id']);
+        //$('.selectTable').removeClass('selectTable');
+        //$(obj.tr[1]).addClass('selectTable');
+    });
+    Rzz();
+});
+
+
+function newTable(){
+    var name = ddaa['name'];
+    if(!name) name = '';
+    //例子2
+    layer.prompt({
+        formType: 0,
+        value: name,
+        title: '新建正则记录--标题',
+        skin: 'layui-layer-prompt layui-layer-aabb',
+    }, function(value, index, elem){
+        db.run('insert into `exec` ("name", "exec", "time", "classx", "info", "sortx", "window", "runType", "super")VALUES (?,?,date("now"),12,"",0, 1, 0, 0)',[value,ZzIDE.getValue()+ "\n\n#=#以下内容是替换项#=#\n\n" + EndIDE.getValue()]);
+        Rzz();
+        layer.msg('成功!', {icon: 1});
+        layer.close(index);
+    });
+}
+
+function upTable(){
+    var name = ddaa['name'];
+    if(!ddaa['id']) return newTable();//layer.msg('数据为空!', {icon: 5});
+    //例子2
+    layer.prompt({
+        formType: 0,
+        value: name,
+        title: '修改正则记录--标题',
+        skin: 'layui-layer-prompt layui-layer-aabb',
+    }, function(value, index, elem){
+        db.run('update `exec` set "name" = ? , "exec" = ? where id = ?',[value,ZzIDE.getValue()+ "\n\n#=#以下内容是替换项#=#\n\n" + EndIDE.getValue(),ddaa['id']]);
+        Rzz();
+        layer.msg('成功!', {icon: 1});
+        layer.close(index);
+    });
+}
+
+function delTable(){
+    layer.confirm('确认删除?', function(index){
+        //console.log(arguments);
+        db.run('delete from `exec` where id = ?',[ddaa['id']]);
+        Rzz();
+        layer.close(index);
+    }); 
+}
+
+//加载表格
+var ddaa={};
+function Rzz(){
+    db.all('select * from `exec` where classx = 12 and `exec` like ?', ["%#=#以下内容是替换项#=#%"], function(err, rows) {
+        var ls = [];
+        for (val in rows) {
+            ls.push(rows[val]);
+        }
+        rows = ls;
+        layui.table.reload('website', {
+            data: rows
+        });
+
+    });
+}
+</script>
+
+<!-- 编辑器模块 -->
+<script>
+var jljs = {},ljxx=false;
+
+jljs['v_bjq'] =
+`
+本编辑器支持:
+撤销-恢复
+
+文本测试:
+被搜索的文本abc
+DD
+被搜索的文本abcEE
+
+\\	将下一个字符标记为一个特殊字符、或一个原义字符、或一个向后引用、或一个八进制转义符。例如，“n”匹配字符“n”。“\\n”匹配一个换行符。串行“\\\\”匹配“\\”而“\\(”则匹配“(”。
+^	匹配输入字符串的开始位置。如果设置了RegExp对象的Multiline属性，^也匹配“\\n”或“\\r”之后的位置。
+$	匹配输入字符串的结束位置。如果设置了RegExp对象的Multiline属性，$也匹配“\\n”或“\\r”之前的位置。
+*	匹配前面的子表达式零次或多次。例如，zo*能匹配“z”以及“zoo”。*等价于{0,}。
++	匹配前面的子表达式一次或多次。例如，“zo+”能匹配“zo”以及“zoo”，但不能匹配“z”。+等价于{1,}。
+?	匹配前面的子表达式零次或一次。例如，“do(es)?”可以匹配“does”或“does”中的“do”。?等价于{0,1}。
+{n}	n是一个非负整数。匹配确定的n次。例如，“o{2}”不能匹配“Bob”中的“o”，但是能匹配“food”中的两个o。
+{n,}	n是一个非负整数。至少匹配n次。例如，“o{2,}”不能匹配“Bob”中的“o”，但能匹配“foooood”中的所有o。“o{1,}”等价于“o+”。“o{0,}”则等价于“o*”。
+{n,m}	m和n均为非负整数，其中n<=m。最少匹配n次且最多匹配m次。例如，“o{1,3}”将匹配“fooooood”中的前三个o。“o{0,1}”等价于“o?”。请注意在逗号和两个数之间不能有空格。
+?	当该字符紧跟在任何一个其他限制符（*,+,?，{n}，{n,}，{n,m}）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串“oooo”，“o+?”将匹配单个“o”，而“o+”将匹配所有“o”。
+.	匹配除“\\n”之外的任何单个字符。要匹配包括“\\n”在内的任何字符，请使用像“(.|\\n)”的模式。
+(pattern)	匹配pattern并获取这一匹配。所获取的匹配可以从产生的Matches集合得到，在VBScript中使用SubMatches集合，在JScript中则使用$0…$9属性。要匹配圆括号字符，请使用“\\(”或“\\)”。
+(?:pattern)	匹配pattern但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用或字符“(|)”来组合一个模式的各个部分是很有用。例如“industr(?:y|ies)”就是一个比“industry|industries”更简略的表达式。
+(?=pattern)	正向肯定预查，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，“Windows(?=95|98|NT|2000)”能匹配“Windows2000”中的“Windows”，但不能匹配“Windows3.1”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。
+(?!pattern)	正向否定预查，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如“Windows(?!95|98|NT|2000)”能匹配“Windows3.1”中的“Windows”，但不能匹配“Windows2000”中的“Windows”。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始
+(?<=pattern)	反向肯定预查，与正向肯定预查类拟，只是方向相反。例如，“(?<=95|98|NT|2000)Windows”能匹配“2000Windows”中的“Windows”，但不能匹配“3.1Windows”中的“Windows”。
+(?<!pattern)	反向否定预查，与正向否定预查类拟，只是方向相反。例如“(?<!95|98|NT|2000)Windows”能匹配“3.1Windows”中的“Windows”，但不能匹配“2000Windows”中的“Windows”。
+x|y	匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)ood”则匹配“zood”或“food”。
+[xyz]	字符集合。匹配所包含的任意一个字符。例如，“[abc]”可以匹配“plain”中的“a”。
+[^xyz]	负值字符集合。匹配未包含的任意字符。例如，“[^abc]”可以匹配“plain”中的“p”。
+[a-z]	字符范围。匹配指定范围内的任意字符。例如，“[a-z]”可以匹配“a”到“z”范围内的任意小写字母字符。
+[^a-z]	负值字符范围。匹配任何不在指定范围内的任意字符。例如，“[^a-z]”可以匹配任何不在“a”到“z”范围内的任意字符。
+\\b	匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。
+\\B	匹配非单词边界。“er\\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。
+\\cx	匹配由x指明的控制字符。例如，\\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。
+\\d	匹配一个数字字符。等价于[0-9]。
+\\D	匹配一个非数字字符。等价于[^0-9]。
+\\f	匹配一个换页符。等价于\\x0c和\\cL。
+\\n	匹配一个换行符。等价于\\x0a和\\cJ。
+\\r	匹配一个回车符。等价于\\x0d和\\cM。
+\\s	匹配任何空白字符，包括空格、制表符、换页符等等。等价于[ \\f\\n\\r\\t\\v]。
+\\S	匹配任何非空白字符。等价于[^ \\f\\n\\r\\t\\v]。
+\\t	匹配一个制表符。等价于\\x09和\\cI。
+\\v	匹配一个垂直制表符。等价于\\x0b和\\cK。
+\\w	匹配包括下划线的任何单词字符。等价于“[A-Za-z0-9_]”。
+\\W	匹配任何非单词字符。等价于“[^A-Za-z0-9_]”。
+\\xn	匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\\x41”匹配“A”。“\\x041”则等价于“\\x04&1”。正则表达式中可以使用ASCII编码。.
+\\num	匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\\1”匹配两个连续的相同字符。
+\\n	标识一个八进制转义值或一个向后引用。如果\\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。
+\\nm	标识一个八进制转义值或一个向后引用。如果\\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\\nm将匹配八进制转义值nm。
+\\nml	如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。
+\\un	匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\\u00A9匹配版权符号（?）。
+`;
+jljs['v_zz'] =`(abc)[a-z\\r\\n]+`;
+jljs['v_th'] ="正则替换支持变量 $&=全部 $1=子查询1  $$10=注释 $`=左侧文本 $'=右侧文本";
+
+var StartIDE,ZzIDE,EndIDE;
+getConfig('文本处理_定时备份数据',(v)=>{
+    try{
+        jljs = JSON.parse(v);
+    }catch(e){
+
+    }
+
+//主编辑框
+StartIDE = CodeMirror(text1,
+{
+    //value: JSON.stringify(json),
+    //mode: "javascript",
+    styleActiveLine: true, // 当前行背景高亮
+    matchBrackets: true,   // 括号匹配
+    lineNumbers: true,//行号
+    value:jljs['v_bjq'] ,
+    //extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "ambiance",//主题
+    highlightSelectionMatches: {showToken: /[^\\|\/:\s\^$#@!~%&=*\r\n"'><;?,+`(){}\[\]\u4e00-\u9fa5]/, annotateScrollbar: true},//自动化高亮
+    sadfasgfasdgffd: ""
+});
+StartIDE.setSize('100%', '55%');
+
+//正则辑框
+ZzIDE = CodeMirror(textZZ,
+{
+    //value: JSON.stringify(json),
+    //mode: "javascript",
+    lineWrapping: true,    // 自动换行
+    styleActiveLine: true, // 当前行背景高亮
+    matchBrackets: true,   // 括号匹配
+    //lineNumbers: true,//行号
+    //extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "idea",//主题
+    value:jljs['v_zz'],
+    sadfasgfasdgffd: ""
+
+});
+ZzIDE.setSize('100%', '35%');
+
+//替换辑框
+EndIDE = CodeMirror(textEnd,
+{
+    //value: JSON.stringify(json),
+    //mode: "javascript",
+    lineWrapping: true,    // 自动换行
+    styleActiveLine: true, // 当前行背景高亮
+    matchBrackets: true,   // 括号匹配
+    value:jljs['v_th'],
+    //lineNumbers: true,//行号
+    //extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
+    theme: "idea",//主题
+
+    sadfasgfasdgffd: ""
+});
+EndIDE.setSize('100%', '35%');
+
+
+StartIDE.on('change',function(cm,obj){
+    ljxx=true;
+    //console.log(arguments);
+});
+ZzIDE.on('change',function(cm,obj){
+    ljxx=true;
+    //console.log(arguments);
+});
+EndIDE.on('change',function(cm,obj){
+    ljxx=true;
+    //console.log(arguments);
+});
+
+
+setInterval(() => {
+    if(!ljxx) return false;
+    var jljsxx={};
+    jljsxx['v_bjq']   = StartIDE.getValue();
+    jljsxx['v_zz']    = ZzIDE.getValue();
+    jljsxx['v_th']    = EndIDE.getValue();
+    ljxx = false;
+    //定时备份
+    setConfig('文本处理_定时备份数据',JSON.stringify(jljsxx))
+    
+}, 20*1000);
+
+});
+
+</script>
+
+<!-- 文本替换搜索匹配模块 -->
+<script>
+var curec;
+
+//创建搜索
+function cSearch(){
+    var query,options,ss='g';
+    var start = StartIDE.indexFromPos(StartIDE.getCursor());
+    if(!AaKt.checked) ss+='i';
+    if(LinKt.checked) ss+='m';  
+    if(ZzKt.checked){
+        try {
+            query = new RegExp(ZzIDE.getValue(),ss);
+        } catch (e) {
+            layer.msg('正则抛出异常:<br>'+e);
+            throw e;
+        }
+    }else{
+        query = new RegExp(ZzIDE.getValue().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+    }
+    query.lastIndex = start;
+    query.indexStr = StartIDE.getValue();
+    //var dd = StartIDE.getSearchCursor(query,start);
+    //console.log(dd);
+    return query;
+}
+
+//搜索文本
+function SearchNext(){
+    
+    curec = cSearch();
+    var ranges = [],ls;
+    if((ls = curec.exec(curec.indexStr)) != null) {
+      ranges.push({'anchor': StartIDE.posFromIndex(curec.lastIndex - ls[0].length), 'head': StartIDE.posFromIndex(curec.lastIndex)});
+      StartIDE.setSelections(ranges, 0);
+    }else{
+        layer.msg('到底部了, 继续点击则从头搜索!');
+        ee=false;
+        StartIDE.setCursor({'line':0, 'ch':0});
+    }
+    
+}
+
+//标记搜索所有文本
+function SearchBz(){
+    StartIDE.setCursor({'line':0, 'ch':0});
+    curec = cSearch();
+    var ranges = [],ls;
+    while ((ls = curec.exec(curec.indexStr)) != null) {
+        ranges.push({'anchor': StartIDE.posFromIndex(curec.lastIndex - ls[0].length), 'head': StartIDE.posFromIndex(curec.lastIndex)});
+    }
+    if (ranges.length)StartIDE.setSelections(ranges, 0);
+}
+
+//搜索子匹配
+function indexAll(){
+    StartIDE.setCursor({'line':0, 'ch':0});
+    curec = cSearch();
+    var ls,arr=[],arar,lsarr=[[{field: 'id', title: '序号'}]],i=0;
+    while ((ls = curec.exec(curec.indexStr)) != null) {
+        arar =[];
+        for (let ii = 0; ii < ls.length; ii++) {
+            if(i==0) lsarr[0].push({'field': ii+'', 'title': '匹配'+ii}); 
+            arar.push(htmlSafe(ls[ii]));
+        }
+        arar['id'] = i+1;
+        arr.push(arar);
+        i++;
+    }
+    
+    layer.open({
+        'area': ['99%','99%'],
+        'resize':false,
+        'offset': 'auto',
+        'type': 1, 
+        'content': '<table id="demoxx" lay-filter="test"></table>' ,//这里content是一个普通的String
+        'success': function(layero, index){
+            console.log(arr,lsarr);
+            layui.table.render({
+                //limit:9999,
+                'page':true,
+                'elem': '#demoxx', //指定原始表格元素选择器（推荐id选择器）
+                'cols': lsarr,
+                'data': arr
+            });
+        }
+    });
+    
+    
+    
+}
+
+//替换文本
+function replaceText(){
+    /*
+    var replaceStr, cur = cSearch({'line':0, 'ch':0});
+    replaceStr = EndIDE.getValue();
+    while (cur.findNext()) {
+        StartIDE.replaceRange(replaceStr,cur.from(),cur.to())
+    }
+    */
+    var query,ss='g';
+    if(!AaKt.checked) ss+='i';
+    if(!LinKt.checked) ss+='m';   
+    if(ZzKt.checked){
+        try {
+            query = new RegExp(ZzIDE.getValue(),ss);
+        } catch (e) {
+            layer.msg('正则抛出异常:<br>'+e);
+            throw e;
+        }
+    }else{
+        query = new RegExp(ZzIDE.getValue().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+    }
+
+    StartIDE.setValue(StartIDE.getValue().replace(query,EndIDE.getValue()));
+}
+
+function replaceAllText()
+{
+    var query,ss='g';
+    if(!AaKt.checked) ss+='i';
+    if(!LinKt.checked) ss+='m';   
+    if(ZzKt.checked){
+        try {
+            query = new RegExp('(?:.|\\r|\\n)*?'+ZzIDE.getValue()+'(?:.|\\r|\\n)*?',ss);
+        } catch (e) {
+            layer.msg('正则抛出异常:<br>'+e);
+            throw e;
+        }
+    }else{
+        query = new RegExp(ZzIDE.getValue().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+    }
+
+    StartIDE.setValue(StartIDE.getValue().replace(query,EndIDE.getValue()));  
+}
+</script>
+  
+<!-- Json编辑器 JM  -->
+<script>
+    var json = {"code":200,"data":{"aa":"bb","bbb":[1,2,3]},"error":""};
+    var options = {
+    'modes': ['text', 'code', 'tree', 'form', 'view'],
+    'mode': 'view',
+    //ace: ace,
+    'onEvent':function(node, event) {
+        if ("click" === event.type && node.field !== null){
+            var ls = editor.node.getValue(),pp='',ll='',caa='';
+            for (let index = 0; index < node.path.length; index++) {
+                if(ls instanceof Array){
+                    pp += '['+node.path[index]+']';
+                }else{
+                    pp += ll+node.path[index]+'';
+                }
+                ls = ls[node.path[index]];
+                ll = '.';
+                caa += '["'+node.path[index]+'"]';
+            }
+            if(ls+ '' === '[object Object]' || ls instanceof Array){
+                ls = JSON.stringify(ls,undefined, 4);
+            }
+            JsonPath.value = pp ;
+            JsonPath1.value = caa;
+            jmnr.innerText = ls;
+        } 
+    }
+    };
+    
+    var editor = new JSONEditor(jsoneditor, options, json);
+    //$('.drgsdhtfhsd').removeClass('layui-show');
+    
+</script>

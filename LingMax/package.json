@@ -1,0 +1,32 @@
+{
+    "main": "index.html",
+    "name": "开发者神器库",
+    "nodejs": true,
+    "single-instance": true,
+    "window": {
+        "title": "开发者神器库",
+        "width": 1000,
+        "height": 635,
+        "icon": "logo.png",
+        "position": "center",
+        "min_width": 300,
+        "min_height": 300,
+        "max_width": 0,
+        "max_height": 0,
+        "resizable": true,
+        "always_on_top": false,
+        "fullscreen": false,
+        "show_in_taskbar": true,
+        "frame": false,
+        "show": true,
+        "kiosk": false,
+        "transparent": true
+    },
+    "webkit": {
+        "plugin": true
+    },
+    "dependencies": {
+        "iconv-lite": "^0.5.0",
+        "request": "^2.88.0"
+    }
+}

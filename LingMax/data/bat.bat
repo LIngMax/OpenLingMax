@@ -1,0 +1,1 @@
+cscript "D:\syn\OpenLingMax\LingMax\data\runTemp.vbs"

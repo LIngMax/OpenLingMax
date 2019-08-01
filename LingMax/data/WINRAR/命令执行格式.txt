@@ -1,0 +1,2 @@
+winrar.exe -ibck x G:\xx.zip G:\LingMax\
+-Y È«²¿ÊÇ
