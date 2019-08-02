@@ -246,6 +246,12 @@
         system_exec(nodeRun);
     }
 
+    //添加开机启动
+    if(fs.existsSync(dir('../开发者工具箱.exe'))){
+        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """'+dir('../开发者工具箱.exe')+'""" /f' ;
+        system_exec(nodeRun);
+    }
+
     //发送记录
     Send_Ulast();
 

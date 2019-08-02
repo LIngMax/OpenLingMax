@@ -190,7 +190,7 @@
                                 db.run('INSERT INTO web ( "name", "addr", "time", "classx", "info","sortx") VALUES ( ?, ?, date("now"), ?, ?, ?);', [db_name.value, db_addr.value, db_classx, db_info.value, Number(db_sortx.value)]);
                                 
                                 //删除后更新数据
-                                db.all('select * from web where classx = ?', [db_classx], function(err, rows) {
+                                db.all('select * from web where classx = ? order by sortx desc', [db_classx], function(err, rows) {
                                     var ls = [];
                                     for (val in rows) {
                                         ls.push(rows[val]);
@@ -212,11 +212,11 @@
                 var d = obj.data;
                 switch (obj.event) {
                     case 'del':
-                        layer.confirm('真的删除行么', function(index) {
+                        layer.confirm('真的删除行么:'+d.name, function(index) {
                             obj.del();
                             db.run('delete from web where id = ?', [d.id]);
                             //删除后更新数据
-                            db.all('select * from web where classx = ?', [db_classx], function(err, rows) {
+                            db.all('select * from web where classx = ? order by sortx desc', [db_classx], function(err, rows) {
                                 var ls = [];
                                 for (val in rows) {
                                     ls.push(rows[val]);

@@ -17,7 +17,7 @@
     <script src="../js/CM/addon/hint/javascript-hint.js"></script>
     <link rel="stylesheet" href="../js/CM/addon/hint/show-hint.css">
     <!-- <link rel="stylesheet" href="../js/CM/theme/ttcn.css"> -->
-    <link rel="stylesheet" href="../js/CM/theme/railscasts.css">
+    <link rel="stylesheet" href="../js/CM/theme/ambiance.css">
     <script src="../js/CM/addon/search/searchcursor.js"></script>
     <script src="../js/CM/addon/scroll/annotatescrollbar.js"></script>
     <script src="../js/CM/addon/search/matchesonscrollbar.js"></script>
@@ -40,10 +40,6 @@
         }
         .layui-tab {
             margin:0;
-        }
-        .cm-s-railscasts span.cm-comment {
-            color: #61A151;
-            font-style: initial;
         }
         .layui-table, .layui-table-view {
             margin: 0px 0;
@@ -172,10 +168,11 @@ function name(params) {
 `   ,
     mode: "javascript",
     lineNumbers: true,
+    lineWrapping: true,    // 自动换行
     styleActiveLine: true, // 当前行背景高亮
     matchBrackets: true,   // 括号匹配
     extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
-    theme: "railscasts",//主题
+    theme: "ambiance",//主题
     sadfasgfasdgffd: ""
 });
 CmIDE.setSize('100%', 'calc(100% - 35px)');

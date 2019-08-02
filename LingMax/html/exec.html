@@ -9,12 +9,19 @@
     <link rel="stylesheet" href="../layui/css/layui.css">
     <link rel="stylesheet" href="../js/CM/lib/codemirror.css">
     <script src="../js/CM/lib/codemirror.js"></script>
+    <script src="../js/CM/addon/selection/active-line.js"></script>
+    <script src="../js/CM/addon/edit/matchbrackets.js"></script>
     <script src="../js/CM/mode/javascript/javascript.js"></script>
-
     <script src="../js/CM/addon/hint/show-hint.js"></script>
     <script src="../js/CM/addon/hint/javascript-hint.js"></script>
     <link rel="stylesheet" href="../js/CM/addon/hint/show-hint.css">
+    <!-- <link rel="stylesheet" href="../js/CM/theme/ttcn.css"> -->
     <link rel="stylesheet" href="../js/CM/theme/ambiance.css">
+    <script src="../js/CM/addon/search/searchcursor.js"></script>
+    <script src="../js/CM/addon/scroll/annotatescrollbar.js"></script>
+    <script src="../js/CM/addon/search/matchesonscrollbar.js"></script>
+    <script src="../js/CM/addon/search/match-highlighter.js"></script>
+    <link rel="stylesheet" href="../js/CM/addon/search/matchesonscrollbar.css">
     <style>
         html,
         body {
@@ -251,7 +258,7 @@
                                 db.run('INSERT INTO exec ("window","super","runType", "name", "exec", "time", "classx", "info","sortx") VALUES (?,?,?, ?, ?, date("now"), ?, ?, ?);', [db_window.checked,db_super.selectedIndex,db_runType.selectedIndex,db_name.value, CmIDE.getValue(), db_classx, db_info.value, Number(db_sortx.value)]);
                                 
                                 //删除后更新数据
-                                db.all('select * from exec where classx = ?', [db_classx], function(err, rows) {
+                                db.all('select * from exec where classx = ? order by sortx desc', [db_classx], function(err, rows) {
                                     var ls = [];
                                     for (val in rows) {
                                         ls.push(rows[val]);
@@ -266,6 +273,7 @@
                             success: function() {
                                 //初始化代码
                                 renderForm();
+                                CmIDE.refresh()
                             }
                         });
                         break;
@@ -278,11 +286,11 @@
                 var d = obj.data;
                 switch (obj.event) {
                     case 'del':
-                        layer.confirm('真的删除行么', function(index) {
+                        layer.confirm('真的删除行么:'+d.name, function(index) {
                             obj.del();
                             db.run('delete from exec where id = ?', [d.id]);
                             //删除后更新数据
-                            db.all('select * from exec where classx = ?', [db_classx], function(err, rows) {
+                            db.all('select * from exec where classx = ? order by sortx desc', [db_classx], function(err, rows) {
                                 var ls = [];
                                 for (val in rows) {
                                     ls.push(rows[val]);
@@ -338,6 +346,7 @@
                                 db_super.selectedIndex = d.super;
                                 db_window.checked = d.window;
                                 renderForm();
+                                CmIDE.refresh()
                             }
                         });
                         break;
@@ -361,6 +370,7 @@ var CmIDE = CodeMirror(IDE,
     value:'',
     mode: "javascript",
     lineNumbers: true,
+    lineWrapping: true,    // 自动换行
     extraKeys: { "Ctrl": "autocomplete" },//输入s然后ctrl就可以弹出选择项
     theme: "ambiance",//主题
     sadfasgfasdgffd: ""

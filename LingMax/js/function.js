@@ -586,8 +586,9 @@ function system_http(http_addr) {
 }
 
 /**
- * 执行命令或运行程序
- * @param {string} p 命令或者文件路径
+ * 执行命令或运行程序 异步
+ * @param {string}  p       命令或者文件路径
+ * @param {bool}    resolve 是否自动补全路径
  */
 function system_exec(p, resolve = false) {
     if(p instanceof Array){
@@ -601,6 +602,26 @@ function system_exec(p, resolve = false) {
         p = path.resolve(p);
     }
     child_process.exec(p, function(error, stdout, stderr) {});
+}
+
+
+/**
+ * 执行命令或运行程序 同步
+ * @param {string}  p       命令或者文件路径
+ * @param {bool}    resolve 是否自动补全路径
+ */
+function system_execSync(p, resolve = false) {
+    if(p instanceof Array){
+        for (let i = 0; i < p.length; i++) {
+            if(p[i][0]=='"') continue;
+            p[i] = '"'+p[i].replace('"','\\"')+'"';
+        }
+        p = p.join(' ');
+    }
+    if (resolve) {
+        p = path.resolve(p);
+    }
+    return child_process.execSync(p);
 }
 
 //sort按升序排列

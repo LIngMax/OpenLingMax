@@ -349,7 +349,7 @@ var editor,layedit;
                                     if (fs.existsSync(dirxx(p.path))) {
                                         $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
                                         setTimeout(function() { //图标刷新BUG
-                                            tt.innerHTML = '重新安装';
+                                            tt.innerHTML = '运行';
                                             tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
                                         }, 100);
                                         return;
@@ -358,7 +358,7 @@ var editor,layedit;
                                     //执行解压
                                     child_process.exec('"' + dir("data/WINRAR/WinRAR.exe") + '" -ibck -y ' + (p.file_pwd == '' ? '' : '-p' + p.file_pwd) + ' x "' + dirxx(p.file_path) + '" "' + dirxx(p.file_path, '..') + '"', function(error, stdout, stderr) {}).on('exit', function(code) {
                                         if (fs.existsSync(dirxx(p.path))) {
-                                            tt.innerHTML = '重新安装';
+                                            tt.innerHTML = '运行';
                                             tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
                                             $(tt.parentNode).children(".layui-hide").removeClass('layui-hide');
                                         } else {

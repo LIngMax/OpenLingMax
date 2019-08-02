@@ -32,3 +32,9 @@
 
 .cm-s-railscasts .CodeMirror-matchingbracket { text-decoration: underline; color: white !important;}
 .cm-s-railscasts .CodeMirror-activeline-background { background: #303040; }
+
+/* 新补加的 还原编辑器原始样式 by:LingMax */
+.cm-s-railscasts span.cm-comment {
+    color: #61A151;
+    font-style: initial;
+}

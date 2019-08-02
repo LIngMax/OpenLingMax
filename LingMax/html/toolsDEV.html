@@ -183,7 +183,7 @@
 <button class="layui-btn layui-btn-xs " onclick="text2.value = '{'+eS(StartIDE.getValue()).join(',')+'}'">转为字节集*</button>
                             
 <hr class="layui-bg-green">
-<textarea id="text2"  placeholder="" rows="8" class="layui-textarea" wrap="off" style="overflow:scroll;" ></textarea>           
+<textarea id="text2"  placeholder="拖放图片文件进来这个框框 自动转为Base64编码" rows="8" class="layui-textarea" wrap="on"  ></textarea>           
                 </div>
             </div>
             <div class="layui-tab-item layui-show">
@@ -191,20 +191,66 @@
                     <div id="fhdfghf" style="width:calc(150px + 12%); display: inline-block;vertical-align: top;">
                         <table id="website" lay-filter="demo"></table>
                     </div>
-                    <div style="width: calc(45% - 153px); display: inline-block;vertical-align: top;">
-                        <div id="textZZ" ></div>
+                    <div style="width: calc(45% - 153px); display: inline-block;vertical-align: top;" >
+                        <div id="textZZ" title="查找框 支持正则(右侧*开关)  正则手册自己百度"></div>
                     </div>
                     <div style="width:205px; display: inline-block;padding: 0;  margin: 0; vertical-align: top;">
                         <button class="layui-btn layui-btn-xs " onclick="SearchNext()"><i class="layui-icon layui-icon-search"></i> 查找内容 </button>
-                        <button class="layui-btn layui-btn-xs" onclick="replaceText()">替换全部</button>
-                        <button class="layui-btn layui-btn-xs" onclick="replaceAllText()">匹配结果</button>
+                        <button class="layui-btn layui-btn-xs" onclick="replaceText()" title="普通替换 与文本编辑器差不多">替换全部</button>
+                        <button class="layui-btn layui-btn-xs" onclick="replaceAllText()" title="匹配结果>替换文本
+例子如下:
+我是LingMax
+我爱写脚本
+
+正则查找框:
+我(.)
+
+替换框:
+子匹配1($1)匹配成功
+
+结果:
+子匹配1(是)匹配成功
+子匹配1(爱)匹配成功">匹配替换</button>
                         <button class="layui-btn layui-btn-xs " onclick="SearchBz()"><i class="layui-icon layui-icon-star-fill"></i> 标记所有 </button>
                         <button class="layui-btn layui-btn-xs" onclick="indexAll()">查子匹配</button>
-                        <button class="layui-btn layui-btn-xs" onclick="var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();var arr = StartIDE.getValue().split('\n');for (let i = 0; i < arr.length; i++){aaa += StartStr+arr[i]+EndStr+'\r\n';}StartIDE.setValue(aaa);"> 合成头尾 </button>
+                        <button title="合成头尾
+例子如下:
+我是LingMax
+我爱写脚本
+
+查找框:
+##
+
+替换框:
+。
+
+结果:
+##我是LingMax。
+##我爱写脚本。
+" class="layui-btn layui-btn-xs" onclick="var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();var arr = StartIDE.getValue().split('\n');for (let i = 0; i < arr.length; i++){aaa += StartStr+arr[i]+EndStr+'\r\n';}StartIDE.setValue(aaa);"> 合成头尾 </button>
                         <br>
-                        <input id='StartN' type="number" placeholder="开始0" value="" style="width: 68px;display: inline-block;" >
-                        <input id='EndN' type="number" placeholder="次数" value="" style="width: 68px;display: inline-block;" >
-                        <button class="layui-btn layui-btn-xs" onclick="if(EndN.value*1<1){layer.msg('次数小于1');return false;} ;var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();for (let i = (StartN.value*1); i < (EndN.value*1) + (StartN.value*1); i++){aaa += StartStr+i+EndStr+'\r\n';}StartIDE.setValue(aaa)">生成数据</button>
+                        <input id='StartN' type="number" placeholder="开始0" value="" style="width: 58px;display: inline-block;" >
+                        <input id='EndN' type="number" placeholder="次数" title="次数框: 次数到大于该数字 就会停止" value="" style="width: 55px;display: inline-block;" >
+                        <input id='NAdd' type="number" placeholder="+1"  title="递增框: 每次递增 默认+1" value="" style="width: 43px;display: inline-block;" >
+                        <button title="
+生成数字文本
+例子如下:
+
+查找框: 我提交第
+
+替换框: 次
+
+开始框:10
+
+次数框:2
+
+递增框:5
+
+结果:
+我提交第15次
+我提交第20次
+
+" class="layui-btn layui-btn-xs" onclick="if(EndN.value*1<1){layer.msg('次数小于1');return false;} ;if(NAdd.value*1 == 0) NAdd.value=1;var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();var lsj = (StartN.value*1) ;for (let i = 0; i < (EndN.value*1) + (StartN.value*1); i++){lsj+=(NAdd.value*1);aaa += StartStr+lsj+EndStr+'\r\n';}StartIDE.setValue(aaa)">生成</button>
                         <div class="layui-form">
                             <input type="checkbox" id="ZzKt" lay-skin="switch" lay-text=".*|正则" onclick="ee=false" checked>
                             <input type="checkbox" id="AaKt" lay-skin="switch"  lay-text="Aa|大小写" onclick="ee=false">
@@ -216,7 +262,12 @@
                         <button class="layui-btn layui-btn-xs" onclick="delTable()">删除记录</button>
                     </div>
                     <div style="width:calc(43% - 215px); display: inline-block;vertical-align: top;">
-                        <div id="textEnd" ></div>
+                        <div id="textEnd" title="替换框 支持正则子匹配变量
+$&=全部 
+$1=子查询1 以此类推
+$$10=注释=纯文本$10
+$`=左侧文本
+$'=右侧文本"></div>
                     </div>
                 </div>
             </div>
@@ -550,6 +601,7 @@ StartIDE = CodeMirror(text1,
 {
     //value: JSON.stringify(json),
     //mode: "javascript",
+    lineWrapping: true,    // 自动换行
     styleActiveLine: true, // 当前行背景高亮
     matchBrackets: true,   // 括号匹配
     lineNumbers: true,//行号
@@ -673,11 +725,13 @@ function SearchNext(){
 function SearchBz(){
     StartIDE.setCursor({'line':0, 'ch':0});
     curec = cSearch();
-    var ranges = [],ls;
+    var ranges = [],ls,ii=0;
     while ((ls = curec.exec(curec.indexStr)) != null) {
         ranges.push({'anchor': StartIDE.posFromIndex(curec.lastIndex - ls[0].length), 'head': StartIDE.posFromIndex(curec.lastIndex)});
+        ii++;
     }
     if (ranges.length)StartIDE.setSelections(ranges, 0);
+    layer.msg('总数为: '+ii);
 }
 
 //搜索子匹配
@@ -744,23 +798,34 @@ function replaceText(){
     StartIDE.setValue(StartIDE.getValue().replace(query,EndIDE.getValue()));
 }
 
+//匹配后再替换
 function replaceAllText()
 {
-    var query,ss='g';
+    var query,ss='g',lls;
     if(!AaKt.checked) ss+='i';
     if(!LinKt.checked) ss+='m';   
     if(ZzKt.checked){
         try {
-            query = new RegExp('(?:.|\\r|\\n)*?'+ZzIDE.getValue()+'(?:.|\\r|\\n)*?',ss);
+            query = new RegExp(ZzIDE.getValue(),ss);
+            lls = new RegExp(ZzIDE.getValue(),ss);
         } catch (e) {
             layer.msg('正则抛出异常:<br>'+e);
             throw e;
         }
     }else{
         query = new RegExp(ZzIDE.getValue().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+        lls = new RegExp(ZzIDE.getValue().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+    }
+    var ll = '',
+    th = EndIDE.getValue(),
+
+    lsstr = StartIDE.getValue();
+    
+    while ((ls = query.exec(lsstr)) != null) {
+        ll += ls[0].replace(lls,th);
     }
 
-    StartIDE.setValue(StartIDE.getValue().replace(query,EndIDE.getValue()));  
+    StartIDE.setValue(ll);  
 }
 </script>
   
@@ -797,4 +862,81 @@ function replaceAllText()
     var editor = new JSONEditor(jsoneditor, options, json);
     //$('.drgsdhtfhsd').removeClass('layui-show');
     
+</script>
+
+<script>
+
+    window.ondragover = function (e) { e.preventDefault(); return false };
+
+    window.ondrop = function (e) { e.preventDefault(); return false };
+
+
+    text1.ondragover = text2.ondragover = function () {  return false; };
+
+    text1.ondragover = text2.ondragleave = function () { return false; };
+
+    text2.ondrop = function (e) {
+
+        e.preventDefault();
+
+            var reader = [];
+
+        for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+            reader[i] = new FileReader();
+
+            reader[i].addEventListener("loadend",function () {
+                //console.log(arguments,this.result);
+                text2.value = this.result
+                
+            });
+            //console.log(e.dataTransfer.files[i].path,e.dataTransfer.files);
+            reader[i].readAsDataURL(e.dataTransfer.files[i]);
+        }
+
+        return false;
+
+    };
+
+    text1.ondrop = function (e) {
+        e.preventDefault();
+
+            var reader = [];
+
+        for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+            reader[i] = new FileReader();
+
+            reader[i].addEventListener("loadend",function () {
+                //console.log(arguments,this);
+                var ic = 0,curec = /�/img;
+                StartIDE.setValue(this.result);
+
+                /*自动化识别编码*/
+                if(this.code == 'GBK'){
+                    //console.log('GBK');
+                    return false;
+                }
+                while ((ls = curec.exec(this.result)) != null) {
+                    //console.log(ls);
+                    if(ic > 3){
+                        this.code = 'GBK';
+                        this.readAsText(this.aabb,this.code);
+                        break;
+                    }
+                    ic++;
+                }
+                
+                
+            });
+            console.log(e.dataTransfer.files[i].path,e.dataTransfer.files);
+            reader[i].aabb = e.dataTransfer.files[i];
+            reader[i].code = 'UTF-8';
+            reader[i].readAsText(reader[i].aabb);
+        }
+
+        return false;
+
+    };
+
+
+
 </script>
