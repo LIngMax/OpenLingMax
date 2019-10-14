@@ -1,3 +1,9 @@
+<!--
+ * @Date: 2019-05-09 19:40:21
+ * @Author: 	LingMax
+ * @最后编辑: 	LingMax
+ * @文件详情: 	文件详情
+ -->
 <html>
 <head>
     <meta charset="UTF-8">
@@ -151,6 +157,9 @@
         .main,.main *{
             outline: none;
             cursor: pointer ;
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none;
         }
         .main{
             width: 15px;
@@ -271,17 +280,17 @@
                             </form>
                             <div style="text-align: center;">
                                 
-                                <button class="layui-btn layui-btn-xs " onclick="$('#sendData .inputAll').remove();">删除所有参数</button>
+                                <button class="layui-btn layui-btn-xs " onclick="if(confirm('是否删除所有参数?')==false)return false;$('#sendData .inputAll').remove();">删除所有参数</button>
                                 <button class="layui-btn layui-btn-xs " onclick="copyUrlE();return false;">复制参数(URL)</button>
                                 <button class="layui-btn layui-btn-xs " onclick="copyJsonE();return false;">复制参数(JSON)</button>
                                 <button class="layui-btn layui-btn-xs " onclick="addFile();return false;">添加文件参数</button>
-                                <button class="layui-btn layui-btn-xs " onclick="addInput();return false;">添加文本参数</button>
-                                <button class="layui-btn layui-btn-xs " onclick="autoStr();return false;">粘贴 / 自动识别参数</button>
+                                <button class="layui-btn layui-btn-xs layui-btn-normal " onclick="addInput();return false;">添加文本参数</button>
+                                <button class="layui-btn layui-btn-xs layui-btn-normal" onclick="autoStr();return false;">粘贴 / 自动识别参数</button>
                             </div>
                             <form class="layui-form layui-form-pane" style="margin-top: 8px;" id ='sendData' onsubmit="return false;">
                                 <div style="width: 21%;display:inline-block;text-align: center;/*border-width: 1px;border-style: inset;border-color: #B2B2B2;box-sizing:content-box;*/">字段</div>
-                                <div style="width: 50%;display:inline-block;text-align: center;">值</div>
-                                <div style="width: 27%;display:inline-block;text-align: center;">说明</div>
+                                <div style="width: 50%;display:inline-block;text-align: center;">数据</div>
+                                <div style="width: 27%;display:inline-block;text-align: center;">备注说明</div>
                                 <!-- 此处存放参数 -->
                             </form>
                         </div>
@@ -434,7 +443,7 @@ Uint8Array: [0,191,173,0]
         </div>
     </div>
 </div>
-<div class="layui-side layui-bg-cyan main" contenteditable="true" onkeydown="return false;" onselectstart="return false;" oncontextmenu="return false" >
+<div class="layui-side layui-bg-cyan main selectNone" contenteditable="true" >
     <div class="layui-side-scroll">
         <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
         <ul class="layui-nav layui-bg-black layui-nav-tree layui-inline" id="abd" lay-filter="test">
@@ -456,53 +465,56 @@ Uint8Array: [0,191,173,0]
 var httpReturn={};
 var runSend,defJS =
 `
-//setProxy('127.0.0.1:63697');//设置代理IP
+//setProxy('127.0.0.1:63697');//测试设置代理IP
 
-//参数提交HTTP请求之前的二次处理 
-function CallBackVar(formData){//FormData格式类型对象为参数集
+//HTTP请求之前的处理数据的事件
+function CallBackVar(formData){//FormData格式类型对象  不明白的可以查百度
 
-    return ;//不执行以下的算法例子
+    return ;//不执行 事件
+    
+    /*以下是算法例子*/
 
-    //本人公司经常用的验签算法--以下就是例子
-    var channel = '9998',channelKey = 'n4BADC0aNDAZubjb';//配置商户号 和 KEY
+    var channel = '9998',channelKey = 'n4BADC0aNDAZubjb';//配置channel 和 channelKey 参数
 
-    if(!formData.get('timestamp')) formData.append("timestamp",new Date().getTime()+"");//增加必须参数
-    formData.append("channel",channel);//增加必须参数
+    if(!formData.get('timestamp')) formData.append("timestamp",new Date().getTime()+"");//生成 特定参数 时间戳
+    formData.append("channel",channel);//添加channel参数
 
-    //枚举得到所有参数  并且存放进变量objData
+    //枚举遍历得到所有参数  并且存放进变量objData
     var objData={},Str;
     for (var entry of formData.entries()){
         if(entry[1] instanceof File) {
-            //isFile = true;//文件参数 不做处理
+            //isFile = true;//文件参数 不做任何处理
         }else{
-            objData[entry[0]] = entry[1];
+            objData[entry[0]] = entry[1];//其他参数存入objData
         }
     }
 
-    //对JSON对象参数名字KEY键进行升序排序
+    //将objData对象的参数名字进行升序排序
     objData = (function(d){var c={},b=Object.keys(d).sort();for(let i=0;i<b.length;i++){c[b[i]]=d[b[i]]}return c})(objData);
     ;
 
-    //参数的值加工合并: aa|bb|cc
+    //参数的值 进行合并 以|分割 例如: aa|bb|cc
     Str = (function(c){var a=[];for(var b in c){a.push(c[b])}return a})(objData).join('|');
 
     //取MD5
     channel = crypto.createHash('md5').update(channel).digest('hex');
 
-    //我用的php 中文只支持utf8编码
+    //我用的php 中文只支持utf8编码 不然md5会不一样
     Str = iconv.encode(Str+channel+channelKey,'utf-8');
 
-    //取MD5 
+    //取MD5  如果不转utf-8 md5会不一样
     Str = crypto.createHash('md5').update(Str).digest('hex');
 
-    //添加一个验签参数 JS的对象类的数据都是传指针的 这里改变 调用传进来的源变量也会跟着变
+    //添加一个验签验证参数 JS的对象类的数据都是传指针的 这里改变 调用传进来的源变量也会跟着变
     formData.append("sign",Str);
 
-    //参数二次处理完毕
+    //参数处理完毕 不用返回什么
 }
 
 
 /*
+API 集合 以下是一些常用API
+
 //编码转换 注意啦  验签算法最坑就是这个 PHP JAVA一般都是UTF-8
 iconv.encode(text1.value,"GBK");//支持很多编码转换 自测
 
@@ -537,8 +549,8 @@ JSON.stringify(jsonObj);//生成JSON字符串{"aa":"LingMax"}
 Object.keys(jsonObj).join('|');//JSON的key键 合并: aa|bb|cc
 */
 
-//--------------------以下的脚本不建议你们去改--------------------------------
-//获取参数
+//--------------------以下是请求数据脚本>>不建议你们去改--------------------------------
+//获取所有参数 objData
 var objData = {},formData = new FormData(sendData);
 
 //配置自定义信息
@@ -549,7 +561,7 @@ send,                   //发送内容
 isFile=false;           //是否有文件上传
 
 //配置自定义请求参数--在这里--你只需在这里配置自动化脚本就行
-CallBackVar(formData);//调用二次处理方法
+CallBackVar(formData);//调用二次处理方法  也就是 请求前的参数处理事件
 //formData.append("sign",'abc');
 //formData.append("id",17);
 
@@ -562,14 +574,15 @@ for (var entry of formData.entries()){
     }
 }
 
-//自动选择发送协议
-contentType = DataModeTx.value;
+//自动选择发送协议-以下是自动选择发送协议的流程>>有点复杂
+
+contentType = DataModeTx.value;//提前赋值协议控件的值
 if(zdyPost.value != ''){
     //自定义请求---抓包常用
-    send = zdyPost.value;
-    contentType = DataModeZdy.value;
+    send = zdyPost.value;//赋值要发送的数据
+    contentType = DataModeZdy.value;//赋值自定义协议控件的值
     if(sendMode.value == 'GET'){
-        if(url.indexOf("?")>-1){url+="&"+zdyPost.value}else{url+="?"+zdyPost.value};
+        if(url.indexOf("?")>-1){url+="&"+zdyPost.value}else{url+="?"+zdyPost.value};//生成URL
     } 
 }else if(contentType.indexOf('www')>-1 || sendMode.value == 'GET'){
     //常用普通URL协议
@@ -577,12 +590,12 @@ if(zdyPost.value != ''){
 
     //自动选择URL拼接
     if(sendMode.value == 'GET'){
-        var u = $.param(objData);//如果为GET自动添加?
-        if(u==""){}else{if(url.indexOf("?")>-1){url+="&"+u}else{url+="?"+u}};
-    }else{send = $.param(objData)}
+        var u = $.param(objData);//生成URL参数 的字符串
+        if(u==""){}else{if(url.indexOf("?")>-1){url+="&"+u}else{url+="?"+u}};//自动添加?
+    }else{send = $.param(objData)}//非GET 都需要把内容赋值send
 
 }else if(contentType.indexOf('form-data')>-1){
-    //二进制流协议--文件上传专用-兼容性不错
+    //二进制流协议formData--文件上传专用-兼容性不错
     send = formData;    //支持文件上传
     isFile=false;       //文件标志取消
     contentType= false; //默认自动为这个协议
@@ -596,7 +609,7 @@ if(zdyPost.value != ''){
     layer.msg('您选择了一个脚本不能识别的协议!');
 }
 
-//发现有文件上传
+//重复检测是否有文件上传 并且选择GET
 if(isFile && sendMode.value != 'GET'){
     send = formData;//支持文件上传
     contentType= false; //默认自动为这个协议
@@ -655,7 +668,7 @@ var httpSend =
             }
             httpzt.innerText += '请求完成!';httpqq.innerText = s.time_send;httpjx.innerText = s.time_decode;
         } catch (e) {
-            httpzt.innerText = '请求异常! 请查看日志!';httpzt.style.color="#FF5722";console.log(e);
+            httpzt.innerText = '网络请求异常! 请查看日志console';httpzt.style.color="#FF5722";console.log(e);
         }   
     }
 };
@@ -768,6 +781,7 @@ function sendHttp() {
     
 } 
 function delInput(m){
+    if(confirm('是否删除该参数?')==false)return;
     var fl = m.parentNode;
     fl.parentNode.removeChild(fl);
     layer.msg('该参数已删除!');

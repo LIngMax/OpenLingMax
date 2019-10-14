@@ -21,6 +21,21 @@ const nwjs = require('nw.gui'),
     stream = require('stream'),
     zlib = require('zlib');
 
+// 禁止拖动文件进来跳转
+window.ondragover = function (e) { e.preventDefault(); return false };
+window.ondrop = function (e) { e.preventDefault(); return false };
+
+/**
+ * 让浏览器无法选中元素
+ */
+[].slice.call(document.querySelectorAll('.selectNone'))//坑 让nodelist转真array
+.forEach(ee => {
+    ee.onmousedown=ee.onmouseover=ee.onmouseout=ee.onmouseup=ee.onmousemove=ee.onkeydown=ee.oncontextmenu=ee.onselectstart=ee.onkeydown=ee.onclick=function(){
+        window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+        return false;
+    };
+});
+
 
 /**
  * 递归创建目录 同步方法
@@ -594,14 +609,16 @@ function system_exec(p, resolve = false) {
     if(p instanceof Array){
         for (let i = 0; i < p.length; i++) {
             if(p[i][0]=='"') continue;
-            p[i] = '"'+p[i].replace('"','\\"')+'"';
+            p[i] = '"'+p[i].replace('"','"""')+'"';
         }
         p = p.join(' ');
     }
     if (resolve) {
         p = path.resolve(p);
     }
-    child_process.exec(p, function(error, stdout, stderr) {});
+    child_process.exec(p,{encoding:'gbk'}, function(error, stdout, stderr) {
+        console.log(arguments,iconv.decode(stdout,'gbk'),iconv.decode(stderr,'gbk'),iconv.decode(error,'gbk'))
+    });
 }
 
 
@@ -614,7 +631,7 @@ function system_execSync(p, resolve = false) {
     if(p instanceof Array){
         for (let i = 0; i < p.length; i++) {
             if(p[i][0]=='"') continue;
-            p[i] = '"'+p[i].replace('"','\\"')+'"';
+            p[i] = '"'+p[i].replace('"','"""')+'"';
         }
         p = p.join(' ');
     }

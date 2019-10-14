@@ -1,0 +1,81 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+
+        #main{
+            padding: 0px 0px;
+            
+        }
+        hr {
+            margin: 5px 0;
+        }
+        .layui-tab {
+            margin:0;
+        }
+        .layui-table, .layui-table-view {
+            margin: 0px 0;
+        }
+        #MouseGetColor{
+            /* cursor: url("http://ued.taobao.com/blog/wp-content/themes/taobaoued/images/cursor.ico"),auto; */
+            cursor: url("../img/MouseGetColor.ico"),copy;
+            background-image: url("../img/MouseGetColor.png");
+            width: 50px;
+            height: 50px;
+            /* cursor: pointer; */
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="layui-tab layui-tab-brief">
+        <ul class="layui-tab-title">
+            <li class="layui-this">截图取色</li>
+            <li>其他</li>
+        </ul>
+        <div class="layui-tab-content" > 
+            <div class="layui-tab-item layui-show" >
+                <div id="MouseGetColor" class="selectNone" contenteditable="true">asdasd</div>
+                <div ondrop="console.log(event.type);" onblur="console.log(1)" contenteditable="true">dawsdzx</div>
+            </div>
+            <div class="layui-tab-item">3</div>
+        </div>
+    </div>
+</body>
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script>
+var db_classx = window.location.hash.slice(1);
+var element;
+layui.use('element', function(){
+    element = layui.element;
+});
+
+
+//重新渲染表单
+function renderForm(){
+  layui.use('form', function(){
+   var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+   form.render();
+  });
+}
+</script>

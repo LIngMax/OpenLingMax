@@ -14,6 +14,13 @@ if(cwd == 'G:\\syn\\OpenLingMax\\LingMax'){
         if(aacce.length > 0 && (aacce[0]+'').length > 0) aacce[0] = 'G:/软件/LingMax/resource/'+aacce[0];
         return dir.apply(this, aacce);
     };
+}else if(cwd == 'D:\\syn\\OpenLingMax\\LingMax'){
+    console.log('工具库切换到 开发者环境 公司');
+    dirxx = function(){
+        var aacce = arguments;
+        if(aacce.length > 0 && (aacce[0]+'').length > 0) aacce[0] = 'D:/OpenLingMax/resource/'+aacce[0];
+        return dir.apply(this, aacce);
+    };
 }
 
 

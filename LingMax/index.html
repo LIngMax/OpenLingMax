@@ -25,6 +25,7 @@
     .layui-header {
         user-select: none;
         -webkit-user-select: none;
+        
     }
     
     .layui-layout-admin .layui-logo {
@@ -69,7 +70,7 @@
 
     #main,#main *{
         outline: none;
-        cursor: pointer ;
+        cursor: pointer ; 
     }
     #main:focus,#main:hover{
         width: 200px;
@@ -108,7 +109,7 @@
             </ul>
         </div>
 
-        <div class="layui-side layui-bg-black" id="main" contenteditable="true" onkeydown="return false;" onselectstart="return false;" oncontextmenu="return false" >
+        <div class="layui-side layui-bg-black selectNone" id="main"  contenteditable="true" >
             <div class="layui-side-scroll">
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
                 <ul class="layui-nav layui-bg-cyan layui-nav-tree layui-inline" lay-filter="test">
@@ -119,6 +120,7 @@
                     </li>
                     <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsDEV.html">文本处理</a></li>
                     <li class="layui-nav-item"><a class="nl" href="#" data-url="html/POST.html">Post表单</a></li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/devTool.html">辅助工具</a></li>
                     <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsFZ.html#0">脚本调试</a></li>
                     <li class="layui-nav-item">
                         <a href="#" data-url="#">脚本仓库</a>
@@ -242,14 +244,14 @@
 
     //添加开机启动
     if(fs.existsSync(dir('../NBuilder.exe'))){
-        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """"'+dir('../NBuilder.exe')+'""" """'+dir('../resource')+'""""' ;
+        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """"'+dir('../NBuilder.exe')+'""" """'+dir('../resource')+'"""" /f' ;
         system_exec(nodeRun);
     }
 
     //添加开机启动
-    if(fs.existsSync(dir('../开发者工具箱.exe'))){
-        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """'+dir('../开发者工具箱.exe')+'""" /f' ;
-        system_exec(nodeRun);
+    if(fs.existsSync(dir('../NW.js/NBuilder.exe'))){
+        var nodeRun = 'reg add "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\run" /v "LingMaxTool" /d """"'+dir('../NW.js/NBuilder.exe')+'""" """'+dir('../LingMax')+'"""" /f';
+        system_exec(nodeRun); 
     }
 
     //发送记录

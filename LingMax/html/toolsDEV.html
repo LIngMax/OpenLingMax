@@ -1,3 +1,9 @@
+<!--
+ * @Date: 2019-05-08 21:37:40
+ * @Author: 	LingMax
+ * @最后编辑: 	LingMax
+ * @文件详情: 	文件详情
+ -->
 <html>
 
 <head>
@@ -586,7 +592,7 @@ x|y	匹配x或y。例如，“z|food”能匹配“z”或“food”。“(z|f)o
 \\un	匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\\u00A9匹配版权符号（?）。
 `;
 jljs['v_zz'] =`(abc)[a-z\\r\\n]+`;
-jljs['v_th'] ="正则替换支持变量 $&=全部 $1=子查询1  $$10=注释 $`=左侧文本 $'=右侧文本";
+jljs['v_th'] ="正则替换支持变量 \r\n$&=全部匹配 \r\n$1=子匹配1  \r\n$$10=注释$10 \r\n$`=匹配的左侧文本 \r\n$'=匹配的右侧文本";
 
 var StartIDE,ZzIDE,EndIDE;
 getConfig('文本处理_定时备份数据',(v)=>{
@@ -865,11 +871,6 @@ function replaceAllText()
 </script>
 
 <script>
-
-    window.ondragover = function (e) { e.preventDefault(); return false };
-
-    window.ondrop = function (e) { e.preventDefault(); return false };
-
 
     text1.ondragover = text2.ondragover = function () {  return false; };
 
