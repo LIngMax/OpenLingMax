@@ -145,6 +145,7 @@
 <button class="layui-btn  layui-btn-xs" onclick=" text2.value = (StartIDE.getValue().match(/\n/g)||[]).length+1;">取行数</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.localeCompare(y, 'zh-CN');}).join('\n');">↑ 升序</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.localeCompare(y, 'zh-CN');}).reverse().join('\n');">↓ 降序</button>
+<button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.length-y.length;}).join('\n');">长度排序</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').reverse().join('\n');">倒序</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('').reverse().join('');">反转</button>
 <button class="layui-btn layui-btn-xs" onclick="text2.value = array_uniq(StartIDE.getValue().split('\n')).join('\n');">去重复</button>
@@ -198,7 +199,27 @@
                         <table id="website" lay-filter="demo"></table>
                     </div>
                     <div style="width: calc(45% - 153px); display: inline-block;vertical-align: top;" >
-                        <div id="textZZ" title="查找框 支持正则(右侧*开关)  正则手册自己百度"></div>
+                        <div id="textZZ" title="查找框 支持正则(右侧*开关)  正则手册自己百度
+\b	匹配一个单词边界，也就是指单词和空格间的位置。例如，“er\\b”可以匹配“never”中的“er”，但不能匹配“verb”中的“er”。
+\B	匹配非单词边界。“er\\B”能匹配“verb”中的“er”，但不能匹配“never”中的“er”。
+\cx	匹配由x指明的控制字符。例如，\\cM匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的“c”字符。
+\d	匹配一个数字字符。等价于[0-9]。
+\D	匹配一个非数字字符。等价于[^0-9]。
+\f	匹配一个换页符。等价于\\x0c和\\cL。
+\n	匹配一个换行符。等价于\\x0a和\\cJ。
+\r	匹配一个回车符。等价于\\x0d和\\cM。
+\s	匹配任何空白字符，包括空格、制表符、换页符等等。等价于[ \\f\\n\\r\\t\\v]。
+\S	匹配任何非空白字符。等价于[^ \\f\\n\\r\\t\\v]。
+\t	匹配一个制表符。等价于\\x09和\\cI。
+\v	匹配一个垂直制表符。等价于\\x0b和\\cK。
+\w	匹配包括下划线的任何单词字符。等价于“[A-Za-z0-9_]”。
+\W	匹配任何非单词字符。等价于“[^A-Za-z0-9_]”。
+\xn	匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，“\\x41”匹配“A”。“\\x041”则等价于“\\x04&1”。正则表达式中可以使用ASCII编码。.
+\num	匹配num，其中num是一个正整数。对所获取的匹配的引用。例如，“(.)\\1”匹配两个连续的相同字符。
+\n	标识一个八进制转义值或一个向后引用。如果\\n之前至少n个获取的子表达式，则n为向后引用。否则，如果n为八进制数字（0-7），则n为一个八进制转义值。
+\nm	标识一个八进制转义值或一个向后引用。如果\\nm之前至少有nm个获得子表达式，则nm为向后引用。如果\\nm之前至少有n个获取，则n为一个后跟文字m的向后引用。如果前面的条件都不满足，若n和m均为八进制数字（0-7），则\\nm将匹配八进制转义值nm。
+\nml	如果n为八进制数字（0-3），且m和l均为八进制数字（0-7），则匹配八进制转义值nml。
+\un	匹配n，其中n是一个用四个十六进制数字表示的Unicode字符。例如，\\u00A9匹配版权符号（?）"></div>
                     </div>
                     <div style="width:205px; display: inline-block;padding: 0;  margin: 0; vertical-align: top;">
                         <button class="layui-btn layui-btn-xs " onclick="SearchNext()"><i class="layui-icon layui-icon-search"></i> 查找内容 </button>

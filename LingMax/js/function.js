@@ -211,6 +211,7 @@ function httpData(o){
  * @param {*} sHtml 
  */
 function htmlSafe(sHtml) {
+    if(sHtml == undefined) return '';
     return sHtml.replace(/[<>&"\n]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"\n":'<br>'}[c];});
 }
 
