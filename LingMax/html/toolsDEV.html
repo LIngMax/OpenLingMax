@@ -103,7 +103,7 @@
         }
 
         .layui-table-header{
-            display: none;
+            /*display: none;隐藏表头*/
         }
         .layui-table-cell {
             line-height: 15px;
@@ -111,7 +111,8 @@
             padding: 0;
         }
         .layui-table-view .layui-table td, .layui-table-view .layui-table th {
-            padding: 2px 0px;
+            /*padding: 2px 0px;*/
+            border-color: #aaa;
         }
 
         .layui-layer-aabb .layui-layer-input {
@@ -140,7 +141,8 @@
     <option value="gb2312">gb2312</option>
 </select>
 &nbsp;&nbsp;&nbsp;
-<button class="layui-btn  layui-btn-xs" onclick="StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));">粘贴</button>
+<button class="layui-btn  layui-btn-xs" onclick="StartIDE.setValue(require('nw.gui').Clipboard.get().get('html'));">粘贴html</button>
+<button class="layui-btn  layui-btn-xs" onclick="StartIDE.setValue(require('nw.gui').Clipboard.get().get('text'));">粘贴text</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = ''; StartIDE.setValue(''); ">清空</button>
 <button class="layui-btn  layui-btn-xs" onclick=" text2.value = (StartIDE.getValue().match(/\n/g)||[]).length+1;">取行数</button>
 <button class="layui-btn  layui-btn-xs" onclick="text2.value = StartIDE.getValue().split('\n').sort(function(x,y){return x.localeCompare(y, 'zh-CN');}).join('\n');">↑ 升序</button>
@@ -243,7 +245,7 @@
                         <button title="合成头尾
 例子如下:
 我是LingMax
-我爱写脚本
+我喜欢写脚本
 
 查找框:
 ##
@@ -253,7 +255,7 @@
 
 结果:
 ##我是LingMax。
-##我爱写脚本。
+##我喜欢写脚本。
 " class="layui-btn layui-btn-xs" onclick="var aaa = '',StartStr = ZzIDE.getValue(),EndStr = EndIDE.getValue();var arr = StartIDE.getValue().split('\n');for (let i = 0; i < arr.length; i++){aaa += StartStr+arr[i]+EndStr+'\r\n';}StartIDE.setValue(aaa);"> 合成头尾 </button>
                         <br>
                         <input id='StartN' type="number" placeholder="开始0" value="" style="width: 58px;display: inline-block;" >
@@ -281,7 +283,7 @@
                         <div class="layui-form">
                             <input type="checkbox" id="ZzKt" lay-skin="switch" lay-text=".*|正则" onclick="ee=false" checked>
                             <input type="checkbox" id="AaKt" lay-skin="switch"  lay-text="Aa|大小写" onclick="ee=false">
-                            <input type="checkbox" id="LinKt" lay-skin="switch"  lay-text="多行|多行" onclick="ee=false" >
+                            <input type="checkbox" id="LinKt" lay-skin="switch"  lay-text="多行|多行" onclick="ee=false" checked>
                         </div>
                         <br>
                         <button class="layui-btn layui-btn-xs" onclick="newTable()"><i class="layui-icon layui-icon-template-1"></i> 新建记录</button>
@@ -776,15 +778,20 @@ function indexAll(){
         arr.push(arar);
         i++;
     }
-    
+    console.log("输出子匹配正则数组",getRegMatch(ZzIDE.getValue()))
     layer.open({
         'area': ['99%','99%'],
         'resize':false,
         'offset': 'auto',
+        'moveOut':true,
+        'shade':0.1,
+        'resize':true,
+        'shadeClose':true,
+        //'fixed':false,//拖动
         'type': 1, 
         'content': '<table id="demoxx" lay-filter="test"></table>' ,//这里content是一个普通的String
         'success': function(layero, index){
-            console.log(arr,lsarr);
+            //console.log(arr,lsarr);
             layui.table.render({
                 //limit:9999,
                 'page':true,
@@ -810,7 +817,7 @@ function replaceText(){
     */
     var query,ss='g';
     if(!AaKt.checked) ss+='i';
-    if(!LinKt.checked) ss+='m';   
+    if(LinKt.checked) ss+='m';   //不知道为什么 多行替换会出错
     if(ZzKt.checked){
         try {
             query = new RegExp(ZzIDE.getValue(),ss);
@@ -830,7 +837,7 @@ function replaceAllText()
 {
     var query,ss='g',lls;
     if(!AaKt.checked) ss+='i';
-    if(!LinKt.checked) ss+='m';   
+    if(LinKt.checked) ss+='m';   //不知道为什么 多行替换会出错
     if(ZzKt.checked){
         try {
             query = new RegExp(ZzIDE.getValue(),ss);

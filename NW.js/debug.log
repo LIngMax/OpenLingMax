@@ -3,3 +3,4 @@
 [0712/011943:ERROR:registration_protocol_win.cc(53)] CreateFile: 系统找不到指定的文件。 (0x2)
 [0712/012528:ERROR:registration_protocol_win.cc(53)] CreateFile: 系统找不到指定的文件。 (0x2)
 [0715/224749:ERROR:process_info.cc(372)] NtQuerySystemInformation SystemExtendedHandleInformation: 指定的信息记录长度与请求的信息类别长度不符合。  (0xc0000004)
+[1120/145119:ERROR:registration_protocol_win.cc(53)] CreateFile: 系统找不到指定的文件。 (0x2)

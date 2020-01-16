@@ -1,3 +1,11 @@
+/*
+ * @Date: 2019-04-12 20:35:28
+ * @Author: 	LingMax
+ * @最后编辑: 	LingMax
+ * @文件详情: 	原创JS公开变量遍历功能封装
+ */
+
+
 var aa,start;
 /*
 //性能测试
@@ -141,7 +149,15 @@ function SweepAllStr(all,isAddr=false){
 }
 
 
-
+/**
+ * 开始扫描
+ * @param {string}  ksVal    要扫描的变量地址 'window'字符串表达式
+ * @param {boolean} sf       是否扫描html元素
+ * @param {array}   pcc      要排除的变量 必须存在  文本数组
+ * @param {int}     djc      最高获取几层变量
+ * @param {int}     dsg      限制只扫描属性小于多少个 排除大数据
+ * By:LingMax
+ */
 function SweepStart(ksVal,sf=false,pcc=[],djc=99,dsg=10000)
 {
     if(sf){
@@ -153,7 +169,8 @@ function SweepStart(ksVal,sf=false,pcc=[],djc=99,dsg=10000)
     this.T_jg = SweepVariable(ksVal,pcc,djc,dsg);
 }
 
-function SweepReturn(ksVal,pcc=[],djc=99,dsg=10000)
+//撤销一次搜索记录 相当于回退
+function SweepReturn()
 {
     if(this.T_ls.length < 1){
         return false;
@@ -162,14 +179,15 @@ function SweepReturn(ksVal,pcc=[],djc=99,dsg=10000)
     return true;
 }
 
+//测试环境是否认同本功能
 this.isTrue = function (){
     return window['VP'] === this;
 }
 
 /**
  * 高性能扫描内存
- * @param {string} ksVal    要扫描的变量地址
- * @param {array} pcc       要排除的变量 必须存在
+ * @param {string} ksVal    要扫描的变量地址 'window'字符串表达式
+ * @param {array} pcc       要排除的变量 必须存在  文本数组
  * @param {int} djc         最高获取几层变量
  * @param {int} dsg         限制只扫描属性小于多少个 排除大数据
  * By:LingMax
@@ -193,13 +211,14 @@ function SweepVariable(ksVal,pcc=[],djc=99,dsg=10000){
     addr        = [],//地址列表
     iii         = -1,//遍历的进度
     array       = [],//数组 
-    arrx        = {}//地址列表+变量层数
-    ;
+    arrx        = {},//地址列表+变量层数
+    wnsb        = [],//未能识别的类型
+    dasfds=[];
     //排除的变量
     for (const ktt in pcc) {
         try {
             addr.push(eval(pcc[ktt]));//进栈
-            zz.push(pcc[ktt]);//遍历过的集合体
+            zz.push(pcc[ktt]);//遍历过的集合体 地址文本
             iii++;
             arrx[pcc[ktt]] = 0;//第几层
         } catch (error) {
@@ -220,25 +239,21 @@ function SweepVariable(ksVal,pcc=[],djc=99,dsg=10000){
 
         if(ObjX === window.VP) continue;//自身不扫描
         //console.log(addrs,ObjX);
+        
+        if(ObjX === null) continue;//不扫描null
         array = [];
-
-        if(ObjX === null) continue;//不扫描
-
         if(typeof ObjX === 'object') array = Object.keys(ObjX);
 
-        if(array.length >= dsg){
-            continue;
-        }
+        if(array.length >= dsg)continue;//限制层数超出
         //console.log(array);
         for (let index = 0; index < array.length; index++) {
             let key = array[index];  
-
             try {
                 //console.log(llstr,iii);
                 obb = ObjX[key];
             } catch (error) {
                 //console.log("报错",llstr,iii);
-                continue;
+                continue;//读取失败的直接取消
             }
 
             if(obb === null) continue;
@@ -249,6 +264,7 @@ function SweepVariable(ksVal,pcc=[],djc=99,dsg=10000){
             llstr = addrs+"['"+key+"']";
             if(type === "function") continue;
             if(type === "object"){//ObjX[key] instanceof Array ||
+                //开始查找重复变量
                 lsc = false;
                 for (let ix1 = 0; ix1 < addr.length; ix1++) {
                     if(obb === addr[ix1]){
@@ -256,17 +272,17 @@ function SweepVariable(ksVal,pcc=[],djc=99,dsg=10000){
                         lsc = true;
                         break;
                     }
-                }
-                    
-                if(lsc){
-                    continue;
-                }
+                }  
+                if(lsc) continue;//重复变量对象跳过
+                //结束查找重复变量
 
-                zz.push(llstr);//遍历过的集合体
-                addr.push(obb);//进栈
-                arrx[llstr] = arrx[addrs]+1;//第几层
+                zz.push(llstr);//记录遍历过的集合体
+                addr.push(obb);//进栈  加入待扫描数组
+                arrx[llstr] = arrx[addrs]+1;//位置在第几层 层数+1
                 //console.log(addrs+'["'+key+'"]');
-            }else{
+            }
+            //仅仅放行已知类型
+            else if(["number","string","boolean","bigint"].indexOf(type) > -1){
                 /*
                 if(type === "number"){
                     newNum[llstr] = {"su":ObjX,"key":key};
@@ -276,26 +292,41 @@ function SweepVariable(ksVal,pcc=[],djc=99,dsg=10000){
                     newStr[llstr] = {"su":ObjX,"key":key};
                 }
                 */
-                newObjX[llstr] = {'path':llstr,"su":ObjX,"key":key,'val':obb};
+                newObjX[llstr] = {
+                    'path':llstr,//路径
+                    "su":ObjX,//上一层
+                    "key":key,//当前变量名
+                    'val':obb//数据静态
+                };
                 newArrX.push(newObjX[llstr]);
-            } 
+            }else{
+                //未能识别的类型
+                wnsb[llstr] = obb;
+            }
         }
     }while (zz.length > iii+1);
     start = new Date().getTime() - start;
-    //oldStr.length = Object.keys(oldStr).length;
-    //dg.length = Object.keys(dg).length;
-    //zz.length = Object.keys(zz).length;
-    //newObjX = JSON.stringify(newStr, undefined, 4);
-    return {"boo":newBoo ,"num":newNum , "str":newStr,"all":newObjX,'arr':newArrX,"遍历过的集合体":zz,"发现重复指针":oldStr,"代码执行时间ms":start,s:function (){
-        //另存为文件的函数
-        let ll= '',key,array = Object.keys(newObjX),jg=[];
-        for (let index = 0; index < array.length; index++) {
-            key = array[index];
-            ll += newObjX[key].su[newObjX[key].key] + ":#=xhxx=#:" + key +"\r\n";
-            //ll += arr[key].jg + ":#=xhxx=#:" + key +"\r\n";
+    return {
+        "boo":newBoo ,//逻辑变量集
+        "num":newNum ,//数字变量集
+        "str":newStr,//字符串变量集
+        "all":newObjX,//所有变量集 内容静态
+        'arr':newArrX,//所有变量的映射地址 内容动态
+        "遍历过的集合体":zz,
+        "发现重复指针":oldStr,
+        "代码执行时间ms":start,
+        "未能识别的类型":wnsb,
+        's':function (){//另存为文件的函数
+            //循环拼接 字符串 以便搜索
+            let ll= '',key,array = Object.keys(newObjX),jg=[];
+            for (let index = 0; index < array.length; index++) {
+                key = array[index];
+                ll += newObjX[key].su[newObjX[key].key] + ":#=xhxx=#:" + key +"\r\n";
+                //ll += arr[key].jg + ":#=xhxx=#:" + key +"\r\n";
+            }
+            dow(ll);
         }
-        dow(ll);
-    }}
+    }
 }
 
 /**
@@ -317,7 +348,7 @@ function dow(data,filename){
     e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     a.dispatchEvent(e);
 }  
-
+//公开方法
 this.dow            = dow;
 this.SweepVariable  = SweepVariable;
 this.SweepStr       = SweepStr;

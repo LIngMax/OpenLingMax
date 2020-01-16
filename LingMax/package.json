@@ -26,6 +26,7 @@
         "plugin": true
     },
     "dependencies": {
+        "dns-packet": "^5.2.1",
         "iconv-lite": "^0.5.0",
         "request": "^2.88.0"
     }

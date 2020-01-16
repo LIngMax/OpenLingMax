@@ -1,0 +1,317 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        /*垂直居中 靠右 的div*/
+        
+        .py_right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+        }
+        
+        .color_qj_red {
+            color: #FF5722;
+        }
+        
+        .color_qj_green {
+            color: #5FB878;
+        }
+        
+        #nxxc {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .layui-layer-content .layui-form-label {
+            width: 40px;
+        }
+        
+        .layui-layer-content .layui-input-block {
+            margin-left: 70px;
+        }
+        
+        .layui-layer-content .layui-form {
+            padding-top: 10px;
+            padding-right: 10px;
+        }
+        .layui-table-view{
+            margin: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="website" lay-filter="demo"></table>
+</body>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container" >
+        <button class="layui-btn layui-btn-sm " lay-event="Add" onclick="if(this.innerHTML=='关闭优化'){this.innerHTML='开启优化';ztzt=false;}else{this.innerHTML='关闭优化';ztzt=true;}">关闭优化</button>
+        <button class="layui-btn layui-btn-sm"  onclick="table.reload('website', {data: ddaatt});">清空缓存</button>
+        <input type="text" id="Search_val" placeholder="请输入域名" style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;" onkeydown="if(event.keyCode==13){SearchX.click();}">
+        <button id="SearchX" class="layui-btn layui-btn-sm" lay-event="Search"><i class="layui-icon layui-icon-search"></i></button>
+        <button class="layui-btn layui-btn-sm"  onclick="table.reload('website', {data: ddaatt});">刷新显示</button>
+        
+        <span style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;">保留dns : 114.114.114.114 . 优化缓存:20分钟</span>
+        <button class="layui-btn layui-btn-sm"  onclick="vbs_runData('ipconfig /flushdns');layer.msg('成功! 重启浏览器生效!');">清空系统DNS缓存</button>
+        
+    </div>
+    
+</script>
+<script type="text/html" id="barxx">
+    <a class="layui-btn layui-btn-xs" lay-event="open">使用该服务器IP</a>
+</script>
+<script type="text/html" id="bar">
+    <a class="layui-btn layui-btn-xs" lay-event="ping">Ping</a>
+    <a class="layui-btn layui-btn-xs" lay-event="open">切换服务器</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="dom_edit">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_name" placeholder="请输入标题" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_addr" placeholder="请输入地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">详情</label>
+            <div class="layui-input-block">
+                <input type="text" id="db_info" placeholder="请输入详情" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" id="db_sortx" placeholder="排序从大到小" class="layui-input">
+            </div>
+        </div>
+    </form>
+
+</script>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/function.js"></script>
+<script src="../layui/layui.all.js"></script>
+<script src="../js/netCache.js"></script>
+<script>
+    window.onbeforeunload = () => {udpServer.close()};//关闭时顺便关闭53端口
+    var table;
+    //初始化
+    function init_dns(){
+        //创建表格
+        table.render({
+            elem: '#website',
+            cols: [
+                [{
+                    field: 'host',
+                    title: '被优化的域名',
+                }, {
+                    field: 'ip',
+                    title: 'IP',
+                    width: 150,
+                },{
+                    field: 'zs',
+                    title: '延迟',
+                    width: 80,
+                    sort:true
+                }, {
+                    field: 'tcp',
+                    title: 'TCP',
+                    width: 80,
+                    sort:true
+                },{
+                    field: 'ping',
+                    title: 'Ping',
+                    width: 80,
+                    sort:true
+                },{
+                    field: 'ips',
+                    title: '服务器数',
+                    width: 100,
+                    sort:true
+                }, {
+                    toolbar: '#bar',
+                    fixed: 'right',
+                    title: '操作',
+                    width: 200
+                }]
+            ],
+            data: ddaatt,
+            page: true,
+            toolbar: '#toolbar',
+            defaultToolbar: ['filter'],
+            even: true
+                //limit: 10 //每页默认显示的数量
+                //,skin: 'line' //表格风格
+        });
+    }
+    layui.use('table', function() {
+        table = layui.table;
+        init_dns();// 初始化
+        //头工具栏事件
+        table.on('toolbar(demo)', function(obj) {
+            var d = obj.data;
+            switch (obj.event) {
+                case 'Search':
+                    var sv = Search_val.value;
+                    if(sv == ''){
+                        return;
+                    }
+                    sv = sv.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                    var exes = new RegExp('.*'+sv+'.*','i');
+                    var aarr = [];
+                    for (const key in ddaatt) {
+                        if (ddaatt.hasOwnProperty(key)) {
+                            const ee = ddaatt[key];
+                            if(exes.test(ee.host)){
+                                aarr.push(ee);
+                            }
+                            
+                        }
+                    }
+                    table.reload('website', {data: aarr});
+                    Search_val.value = sv;
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(demo)', function(obj) {
+            var d = obj.data;
+            switch (obj.event) {
+                case 'del':
+                    layer.confirm('真的删除行么:'+d.host, function(index) {
+                        delete Dcache[d.host];
+                        delete Ecache[d.host];
+                        for (const key in ddaatt) {
+                            if (ddaatt.hasOwnProperty(key)) {
+                                if(ddaatt[key].host==d.host){
+                                    //delete ddaatt[key];
+                                    ddaatt.splice(key,1);
+                                    break;
+                                }
+                                
+                            }
+                        }
+                        //obj.del();
+                        table.reload('website', {
+                            'data': ddaatt
+                        });
+                        layer.close(index);
+                    });
+                    break;
+                case 'open':
+                    layer.open({
+                        'title':d.host,
+                        'area': ['90%','90%'],
+                        'resize':false,
+                        'offset': 'auto',
+                        'moveOut':true,
+                        'shade':0.1,
+                        'resize':true,
+                        'shadeClose':true,
+                        //'fixed':false,//拖动
+                        'type': 1, 
+                        'content': '<table id="demoxx" lay-filter="testxx"></table>' ,//这里content是一个普通的String
+                        'success': function(layero, index){
+                            var aarrxxe = [];
+                            var ccw = Dcache[d.host].retArr;
+                            for (const key in ccw) {
+                                if (ccw.hasOwnProperty(key)) {
+                                    const c = ccw[key];
+                                    aarrxxe.push({
+                                        'zs':c.zs,
+                                        'tcp':c.tcp,
+                                        'ping':c.ping,
+                                        'ip':c.ip
+                                    });
+                                }
+                            }
+
+                            //console.log(arr,lsarr);
+                            layui.table.render({
+                                limit:90,
+                                'page':true,
+                                'elem': '#demoxx', //指定原始表格元素选择器（推荐id选择器）
+                                'cols': [[
+                                    {
+                                        field: 'ip',
+                                        title: 'IP',
+                                        width: 150,
+                                        sort:true
+                                    },{
+                                        field: 'zs',
+                                        title: '延迟',
+                                        width: 100,
+                                        sort:true
+                                    }, {
+                                        field: 'tcp',
+                                        title: 'TCP',
+                                        width: 100,
+                                        sort:true
+                                    },{
+                                        field: 'ping',
+                                        title: 'Ping',
+                                        width: 100,
+                                        sort:true
+                                    },{
+                                        toolbar: '#barxx',
+                                        fixed: 'right',
+                                        title: '操作',
+                                        width: 160
+                                    }
+                                ]],
+                                'data': aarrxxe
+                            });
+                            //监听行工具事件
+                            layui.table.on('tool(testxx)', function(obj0) {
+                                var dd = obj0.data;
+                                switch (obj0.event) {
+                                    case 'open':
+                                        var ccwx = Dcache[d.host].retArr;
+                                        for (const key22 in ccwx) {
+                                            if (ccwx.hasOwnProperty(key22)) {
+                                                if(ccwx[key22].ip == dd.ip){
+                                                    var lls = ccwx[key22];
+                                                    Dcache[d.host].retArr.splice(key22,1,ccwx[0]);
+                                                    Dcache[d.host].retArr[0] = lls;
+                                                    layer.close(index);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                }
+                            });
+                        }
+                    });
+                    break;
+                case 'ping':
+                    //编辑
+                    vbs_runData('cmd /c ping '+d.host,'.bat',true,true);
+                    break;
+            }
+        });
+    });
+</script>

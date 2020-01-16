@@ -121,7 +121,7 @@
         </blockquote>
         <blockquote class="layui-elem-quote">
             1、本程序采用自动解压 : 下载完成后,如果没有发现[主程序路径]的文件,就会把刚下载好的文件在当前目录下解压开来<br>
-            2、本程序采用迅雷P2P下载 : P2P有部分上传流量属于正常<br>
+            2、本程序采用P2P下载 : P2P有部分上传流量属于正常<br>
             3、本程序采用WinRAR解压 : WinRAR支持解压的文件都可以
         </blockquote>
     </div>
@@ -320,7 +320,6 @@ var editor,layedit;
             //运行或者下载
             $('.execx').click(function() {
                 var p, tt = this;
-                tt.disabled = true;
                 db.get('select * from obj where id = ' + this.getAttribute("data-path"), [], function(err, res) {
                     p = res;
                     //判断文件是否存在
@@ -331,14 +330,14 @@ var editor,layedit;
                             tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-ok color_qj_green";
                         }, 100);
                         //运行
-                        system_exec('"' + dirxx(p.path) + '" ' + p.run);
+                        system_exec('start "" "' + dirxx(p.path) + '" ' + p.run);
                     } else {
                         //下载
-
+                        tt.disabled = true;//禁用点击
                         ijc++;
                         tt.parentNode.querySelector("#xhrun").className = "layui-icon layui-icon-loading color_qj_green layui-anim layui-anim-rotate layui-anim-loop";
                         var aab = downloadFile(p.file_http,dirxx(p.file_path),function(t){
-                            tt.disabled = false;
+                            tt.disabled = false;//启用点击
                             ijc--;
                             tt.innerText = '处理中..';
                             clearInterval(sse);
@@ -354,7 +353,7 @@ var editor,layedit;
                                         }, 100);
                                         return;
                                     }
-
+                                    tt.innerText = '解压中..';
                                     //执行解压
                                     child_process.exec('"' + dir("data/WINRAR/WinRAR.exe") + '" -ibck -y ' + (p.file_pwd == '' ? '' : '-p' + p.file_pwd) + ' x "' + dirxx(p.file_path) + '" "' + dirxx(p.file_path, '..') + '"', function(error, stdout, stderr) {}).on('exit', function(code) {
                                         if (fs.existsSync(dirxx(p.path))) {

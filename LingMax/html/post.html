@@ -47,7 +47,8 @@
             margin: 0px 0;
         }
         .layui-tab-content {
-            padding: 0 10px 5px;
+            /*padding: 0 10px 5px;*/
+            /*background-color: #EEE;*/
         }
 
         .bbg{
@@ -107,7 +108,7 @@
         }
 
         #xhxxide,#retide,#rHeaders,#rBin{
-            height: 75%;
+            height: calc(100% - 128px - 43px - 10px);
         }
         .CodeMirror{
             height: 100%;
@@ -255,12 +256,12 @@
     </form>
     <div class="layui-collapse">
         <div class="layui-colla-item">
-            <h2 class="layui-colla-title">提交参数</h2>
+            <h2 class="layui-colla-title">提交参数 <span id="csts" style="color:brown;"></span></h2>
             <div class="layui-colla-content layui-show">
                 <div class="layui-tab layui-tab-brief">
-                    <ul class="layui-tab-title">
-                        <li class="layui-this">参数填写(API常用)</li>
-                        <li>自定义参数(抓包常用)</li>
+                    <ul class="layui-tab-title" >
+                        <li class="layui-this" id="apics" onclick="csxz();">参数填写(API常用)</li>
+                        <li id="zdycs" onclick="csxz();">自定义参数(抓包常用)</li>
                         <li>Cookies(自动合并更新)</li>
                         <li>Headers(协议头)</li>
                     </ul>
@@ -288,6 +289,7 @@
                                 <button class="layui-btn layui-btn-xs layui-btn-normal" onclick="autoStr();return false;">粘贴 / 自动识别参数</button>
                             </div>
                             <form class="layui-form layui-form-pane" style="margin-top: 8px;" id ='sendData' onsubmit="return false;">
+                                <hr style="margin: 0;">
                                 <div style="width: 21%;display:inline-block;text-align: center;/*border-width: 1px;border-style: inset;border-color: #B2B2B2;box-sizing:content-box;*/">字段</div>
                                 <div style="width: 50%;display:inline-block;text-align: center;">数据</div>
                                 <div style="width: 27%;display:inline-block;text-align: center;">备注说明</div>
@@ -312,7 +314,7 @@
                                     </div>
                                 </div>
                             </form>
-                            <textarea id="zdyPost" class="layui-textarea" placeholder='id=11&aa=12 或者 {"id":11} 等等...双击粘贴' ondblclick="this.select();document.execCommand('paste');" ></textarea>
+                            <textarea id="zdyPost" class="layui-textarea" placeholder='id=11&aa=12 或者 {"id":11} 等等...双击粘贴' ondblclick="this.select();document.execCommand('paste');" onchange="csxz();" ></textarea>
                         </div>
 
                         <div class="layui-tab-item">
@@ -355,13 +357,13 @@ Via" ondblclick="this.select();document.execCommand('paste');"  class="layui-tex
                 </div>
             </div>
         </div>
-        <div class="layui-colla-item" onclick="/*数据无法及时刷新BUG*/setTimeout('CmIDE.refresh()', 100);">
-            <h2 class="layui-colla-title">自动化JS脚本---每次点击发送时都会先运行此脚本</h2>
+        <div class="layui-colla-item" onclick="hcxs();">
+            <h2 class="layui-colla-title">自动化JS脚本---每次点击发送时都会先运行此脚本 &nbsp;&nbsp;&nbsp;&nbsp;<span id="js_echo" style="color:red;"></span></h2>
             <div class="layui-colla-content layui-show diogflagfjdh">
                 <div id="xhxxide"></div>
             </div>
         </div>
-        <div class="layui-colla-item">
+        <div class="layui-colla-item" onclick="hcxs();">
             <h2 class="layui-colla-title">
                 HTTP状态码: 
                 <span id='httpcode'>---</span>
@@ -373,9 +375,9 @@ Via" ondblclick="this.select();document.execCommand('paste');"  class="layui-tex
             <div class="layui-colla-content layui-show dsajirgfdjj">
                 <div class="layui-tab layui-tab-brief">
                     <ul class="layui-tab-title">
-                        <li class="layui-this" onclick="/*数据无法及时刷新BUG*/setTimeout('RetIDE.refresh()', 100);">Text(通用结果)</li>
+                        <li class="layui-this" onclick="hcxs()">Text(通用结果)</li>
                         <li>Json(接口常用)</li>
-                        <li>View(视图资源)</li>
+                        <li onclick="hcxs()">View(视图资源)</li>
                         <li>Head(响应数据)</li>
                         <li>Data(BIN数据)</li>
                         <li>Doc(API文档)</li>
@@ -386,6 +388,18 @@ Via" ondblclick="this.select();document.execCommand('paste');"  class="layui-tex
                             <button class="layui-btn layui-btn-xs " onclick="RetIDE.setValue(js_beautify(RetIDE.getValue()));">JS/JSON美化</button>
                             <button class="layui-btn layui-btn-xs" onclick="RetIDE.setValue(html_beautify(RetIDE.getValue()));">HTML美化</button>
                             <button class="layui-btn layui-btn-xs " onclick="RetIDE.setValue(JSON.stringify(JSON.parse(RetIDE.getValue()),undefined, 4));return false;">Json美化2</button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            搜索
+
+                            <input type="text" id="retText">
+
+                            <button class="layui-btn layui-btn-xs" onclick="SearchNext()">&nbsp; 查找下一个 &nbsp;</button>
+                            <button class="layui-btn layui-btn-xs" onclick="SearchBz();">&nbsp; 标记所有 &nbsp;</button>
+                            <div class="layui-form" style="display: inline;position: relative;top: -5px;">
+                                <input type="checkbox" id="ZzKt" lay-skin="switch" lay-text=".*|正则" onclick="ee=false" checked>
+                                <input type="checkbox" id="AaKt" lay-skin="switch"  lay-text="Aa|大小写" onclick="ee=false">
+                                <input type="checkbox" id="LinKt" lay-skin="switch"  lay-text="多行|多行" onclick="ee=false" checked>
+                            </div>
                             <div id="retide"></div>
                         </div>
                         <div class="layui-tab-item drgsdhtfhsd">
@@ -403,8 +417,8 @@ Via" ondblclick="this.select();document.execCommand('paste');"  class="layui-tex
                             </div>
                             <div style="clear: both;"></div>
                         </div>
-                        <div class="layui-tab-item ">
-                            <iframe src="" frameborder="0" style="width:100%;height:85%;" id='httpdoc' ></iframe>
+                        <div class="layui-tab-item " >
+                            <webview src="" frameborder="0" style="width:100%;height:85%;" id='httpdoc' autosize="on" ></webview>
                         </div>
                         <div class="layui-tab-item">
                             <textarea id="rHeaders"  placeholder="
@@ -457,7 +471,7 @@ Uint8Array: [0,191,173,0]
 <script src="../js/jquery-3.3.1.min.js"></script>
 <script src="../js/function.js"></script>
 <script src="../layui/layui.all.js"></script>
-<script src="../js/vconsole.min.js"></script>
+<!-- <script src="../js/vconsole.min.js"></script> -->
 <script src="../js/dataCode.js"></script>
 
 <!-- 内置自动化脚本 -->
@@ -628,73 +642,122 @@ var httpSend =
     'withCredentials': true,//支持跨域
     'timeout':15*1000,//超时秒数
     //响应数据
-    'CallBack': function(s) {
-        try {
-            //请求状态
-            httpzt.innerText = s.statusText;
-            if(s.statusText=="OK"){httpzt.style.color="#5FB878"}else{httpzt.style.color="#FF5722"};
-
-            //返回代码
-            httpcode.innerText = s.status;
-            if(s.status==200){httpcode.style.color="#5FB878"}else{httpcode.style.color="#FF5722"};
-
-            //响应头
-            rHeaders.value = s.getAllResponseHeaders();
-            //代码文本框
-            RetIDE.setValue(s.responseString);
-            //JSON代码框
-            try{JSON.parse(s.responseString);editor.setText(s.responseString)}catch(e){editor.setText('{"error":"该结果不是JSON字符串!"}')};
-
-            //返回类型
-            var ls = s.getResponseHeader('Content-Type');
-            if(ls===null) ls = '*';httptype.innerText = ls;
-
-            //判断是不是图片
-            if(/pdf|octet-stream|video|image|css|audio/i.test(ls)){
-                httpdoc.src = s.responseDataURL;
-            }else{
-                //DOC资源浏览器模式
-                httpdoc.src = "about:blank";
-                
-                httpdoc.onload = function(){
-                    httpdoc.onload = null;
-                    var cc = JSON.stringify('<!-- 随机文本'+Math.random()+' -->'+s.responseString);
-                    var aa = 'var ff = '+cc+';document.write(ff);';
-                    win.eval(httpdoc, 'history.pushState({},"title'+Math.random()+'","'+httpSend.url+'#abc'+Math.random()+'");');
-                    win.eval(httpdoc, aa);
-                    
-                };
-                httpdoc.src = url2Origin(httpSend.url)+"/ProxyIp/dAs88jjdfWsxjdfs/LingMax";
-            }
-            httpzt.innerText += '请求完成!';httpqq.innerText = s.time_send;httpjx.innerText = s.time_decode;
-        } catch (e) {
-            httpzt.innerText = '网络请求异常! 请查看日志console';httpzt.style.color="#FF5722";console.log(e);
-        }   
-    }
+    'CallBack': httpCallBack,
 };
 try {
     httpReturn = httpAll(httpSend);
     httpzt.innerText = '请求中..';
-    console.log(httpReturn);
+    //console.log(httpReturn);
 } catch (e) {
     httpzt.innerText = '请求失败!'+e;httpqq.innerText="---";httpjx.innerText="---";httpcode.style.color="#000";httpcode.innerText="---";httpzt.style.color="#000";    httpzt.style.color="#FF5722";console.log(e);  
 }
 
 `;
-var server = require("net").createServer(function(socket){
-    /* 发送数据 */
-    socket.on('data',function(data){
-        //console.log(data);
-        socket.write(`HTTP/1.1 200 OK
-Content-Type: text/html
-Content-Length: 7
+function httpCallBack(s) {
+    try {
+        //请求状态
+        httpzt.innerText = s.statusText;
+        if(s.statusText=="OK"){httpzt.style.color="#5FB878"}else{httpzt.style.color="#FF5722"};
 
-LingMax`,function(){});
-    });
+        //返回代码
+        httpcode.innerText = s.status;
+        if(s.status==200){httpcode.style.color="#5FB878"}else{httpcode.style.color="#FF5722"};
+
+        //响应头
+        rHeaders.value = s.getAllResponseHeaders();
+        //代码文本框
+        RetIDE.setValue(s.responseString);
+        //JSON代码框
+        try{JSON.parse(s.responseString);editor.setText(s.responseString)}catch(e){editor.setText('{"error":"该结果不是JSON字符串!"}')};
+
+        //返回类型
+        var ls = s.getResponseHeader('Content-Type');
+        if(ls===null) ls = '*';
+        httptype.innerText = ls;
+        //console.log(ls);
+        //判断是不是图片
+        if(/pdf|octet-stream|video|image|css|audio/i.test(ls)){
+            httpdoc.src = s.responseDataURL;
+        }else{
+            //DOC资源浏览器模式
+            httpdoc.onloadabort = httpdoc.onloadstop = function(){
+                httpdoc.parentNode.style='height:calc(100% - 2px + '+(httpdoc.inti=(!httpdoc.inti)*1)+'px;';
+                httpdoc.onloadabort = httpdoc.onloadstop = null;
+                var cc = JSON.stringify('<!-- 随机文本'+Math.random()+' -->'+s.responseString);
+                var aa = 'var ff = '+cc+';document.write(ff);';
+                httpdoc.executeScript ({code:aa});
+                //win.eval(httpdoc, 'history.pushState({},"title'+Math.random()+'","'+s.url+'#abc'+Math.random()+'");');
+                //win.eval(httpdoc, aa);
+            };
+            httpdoc.src = /[^?#]+/.exec(s.url)+"/ProxyIp/dAs88jjdfWsxjdfs/LingMax";
+        }
+        httpzt.innerText += '请求完成!';httpqq.innerText = s.time_send;httpjx.innerText = s.time_decode;
+    } catch (e) {
+        httpzt.innerText = '请求异常: 右击->检查[日志console]';httpzt.style.color="#FF5722";console.log(e);
+    }   
+}
+
+
+var credentials = {'key': 
+`-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQDABwQjs/UN/yKnGYnApe8VJ2iezeO5yJhTB6VMKsfZiM5WQJEq
+GiDeqDRJc8UlmlzYLFa3JwnqCzptAtX9k8sGQOV54TKyc3g9/onUjySDmQTGn4OE
+bSmFmEfL9kwDKJRPeroCgC1melyA+KvbbCGEba4dkONxEjVFmsFq1Vy3ZwIDAQAB
+AoGBAIiNdLge5IiLggzp8Dd6yEV2vMMRDnuy1f9VVIqRcYST8IcNay1RX0Z2vpft
+J6jR2GwxO4kKzdYNHgMfHSUx0BDpjxvVYLsPKR6eEqLnXKP8soUUFYkKSkgARujr
+LupQUPqK/+kspCRgV6Wq+P25xbDqCKEndY4UYwdo565eBwLhAkEA9CwpJYIs9bCe
+55ZoBSn5gVJ7/CNaJ0UgLcYxnq2jdmitCOdckDsm2JlE+v+x3hH5TjHIhtMSUC2c
+1F2M23rI+wJBAMlUPB7TY6HsXxauKWcF7LgaV8kLPFtzZtSHZaQa+Io6hB90+qNB
+aM4wzKoedW6qWJDrpg0JjN4EQTKWRpO/V4UCQGQaRrQt7ii7xCnFq9eSIcw2+MWh
+6K/40vxxKJ6ZKU6+E1J3J6ep2H8sNu+ALHeSftbj6gX8OqHMUWNvBvRkHkkCQCCT
+TJcARSKyCEC3NWPCBadUO9f/xWhWp9DDh6Kh6o0TIsWkO9mmf7q9EqCEBSQ+082/
+E0MQxIY30gTJY+oMD7ECQFcltII4Lnpo0++84jxtiGjG70NS8yHs9nMEoYmxwx3Q
+dZoLYESSpogIELmWedlpEhBlNXrzSG0+G8INR8oYLko=
+-----END RSA PRIVATE KEY-----
+`
+, 'cert': 
+`-----BEGIN CERTIFICATE-----
+MIICmDCCAgECFECxFv6hTg0nM76FZU1jKY61PSwpMA0GCSqGSIb3DQEBCwUAMIGJ
+MQswCQYDVQQGEwJBVTFXMFUGA1UECAxOb3BlbnNzbCB4NTA5IC1yZXEgLWRheXMz
+NjUtaW4gLi9jc3IucGVtIC1zaWdua2V5IC4vcHJpdmF0ZS5wZW0gLW91dCAuL2Zp
+bGUuY3J0MSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwIBcNMTkx
+MTA4MDUwNTU0WhgPNDc1NzEwMDQwNTA1NTRaMIGJMQswCQYDVQQGEwJBVTFXMFUG
+A1UECAxOb3BlbnNzbCB4NTA5IC1yZXEgLWRheXMzNjUtaW4gLi9jc3IucGVtIC1z
+aWdua2V5IC4vcHJpdmF0ZS5wZW0gLW91dCAuL2ZpbGUuY3J0MSEwHwYDVQQKDBhJ
+bnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
+AoGBAMAHBCOz9Q3/IqcZicCl7xUnaJ7N47nImFMHpUwqx9mIzlZAkSoaIN6oNElz
+xSWaXNgsVrcnCeoLOm0C1f2TywZA5XnhMrJzeD3+idSPJIOZBMafg4RtKYWYR8v2
+TAMolE96ugKALWZ6XID4q9tsIYRtrh2Q43ESNUWawWrVXLdnAgMBAAEwDQYJKoZI
+hvcNAQELBQADgYEAoQqDruaKP+e3MahOld162iO278BeOPOZ+EvhhjTFo65P93b2
+8YfQRYQDafvfBUVO6qXiHoKK1wgdGFQFLow8SSgCxjIqhzyAgKVgBsaAIOeozG6H
+8jdCLeX6GUYVwzZyqGUZg0XmkOs8QWoB3UniLmxSEi56EYQHIvqICNU4yXI=
+-----END CERTIFICATE-----
+`
+};
+
+// require("https").createServer(credentials, (req, res) => {
+//     res.write(`HTTP/1.1 200 OK
+// Content-Type: text/html
+// Content-Length: 7
+
+// LingMax`);
+//     return;
+//   res.writeHead(200);
+//   res.end('LingMax');
+// }).listen(63698);
+
+// var server = require("net").createServer(function(socket){
+//     /* 发送数据 */
+//     socket.on('data',function(data){
+//         //console.log(data);
+//         socket.write(`HTTP/1.1 200 OK
+// Content-Type: text/html
+// Content-Length: 7
+
+// LingMax`,function(){});
+//     });
     
-}).listen(63697);/* 设置监听端口 */
-
-
+// }).listen(63697);/* 设置监听端口 */
 
 function setProxy(proxy){
     if(proxy != 'DIRECT' && proxy){
@@ -707,8 +770,15 @@ function setProxy(proxy){
     pacScript: {
     data:
 `function FindProxyForURL(url, host) {
-    if (shExpMatch(url,"*/ProxyIp/dAs88jjdfWsxjdfs/LingMax")) 
+    return 'DIRECT';
+    if (shExpMatch(url,"https:*/ProxyIp/dAs88jjdfWsxjdfs/LingMax")) {
+        return 'DIRECT';
+        return 'PROXY 127.0.0.1:63698';
+    }
+    if (shExpMatch(url,"*/ProxyIp/dAs88jjdfWsxjdfs/LingMax")) {
         return 'PROXY 127.0.0.1:63697';
+    }
+        
     return '`+proxy+`';
 }`
   }
@@ -722,15 +792,25 @@ setProxy('DIRECT');//禁用代理IP
 
 <!-- 功能模块 -->
 <script>
+
+//显示BUG 集中营 前端渲染问题
+function hcxs(){
+    /*数据无法及时刷新BUG*/
+    var time_run = 50;
+    setTimeout('RetIDE.refresh()', time_run);//请求结果 富文本框 BUG
+    setTimeout('httpdoc.parentNode.style=\'height:calc(100% - 2px + '+(httpdoc.inti=(!httpdoc.inti)*1)+'px)\';', time_run);//view视图渲染bug
+    setTimeout('CmIDE.refresh()', time_run);//自动脚本 富文本框 BUG
+}
+
+
+
 //框架初始化
 var element;
 layui.use('element', function(){
     element = layui.element;
     locatList();
 });
-
-
-        
+   
 var json = {"code":200,"data":{"aa":"bb","bbb":[1,2,3]},"error":""};
 function colInput(m){
     var fl = m.parentNode.querySelector(".sendInput");
@@ -1063,7 +1143,7 @@ function getInput(){
     });
     sendX =JSON.stringify(sendX);
     var jsdm = CmIDE.getValue();
-    if(jsdm == defJS) jsdm == '';
+    if(jsdm == defJS) jsdm = '';
     return [
         httpName.value,
         sendX,
@@ -1151,7 +1231,12 @@ function cilckMode(id) {
         }
         nCookies.value= data.cookies;
         nHeaders.value = data.headers;
-        if(data.js==''||data.js===null)data.js=defJS;
+        if(data.js==''||data.js===null){
+            js_echo.innerText = '';
+            data.js=defJS;
+        }else{
+            js_echo.innerText = '该脚本修改保存过的-注意BUG';
+        }
         CmIDE.setValue(data.js);
         doc.innerHTML = data.doc;
         httpUrl.value = data.url;
@@ -1160,6 +1245,7 @@ function cilckMode(id) {
         DataModeTx.selectedIndex = data.DataModeTx;
         zdyPost.value = data.zdyPost;
         layui.form.render("select");
+        csxz();
     });
 }
 
@@ -1224,6 +1310,13 @@ function locatList(){
 
 }
 
+function csxz(){
+    if(zdyPost.value != ''){
+        csts.innerText='当前: '+zdycs.innerText;
+    }else{
+        csts.innerText='当前: '+apics.innerText;
+    }
+}
 </script>
 
 <!-- 代码编辑器初始化 -->
@@ -1253,6 +1346,61 @@ var RetIDE = CodeMirror(retide,
     sadfasgfasdgffd: ""
 });
 $('.diogflagfjdh').removeClass('layui-show');
+
+
+var curec;
+
+//创建搜索正则
+function cSearch(){
+    var query,options,ss='g';
+    var start = RetIDE.indexFromPos(RetIDE.getCursor());//获取现在选择的位置
+    if(!AaKt.checked) ss+='i';
+    if(LinKt.checked) ss+='m';  
+    if(ZzKt.checked){
+        try {
+            query = new RegExp(retText.value,ss);
+        } catch (e) {
+            layer.msg('正则抛出异常:<br>'+e);
+            throw e;
+        }
+    }else{
+        query = new RegExp(retText.value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"),ss);
+    }
+    query.lastIndex = start;
+    query.indexStr = RetIDE.getValue();
+    //var dd = StartIDE.getSearchCursor(query,start);
+    //console.log(dd);
+    return query;
+}
+
+//搜索文本
+function SearchNext(){
+    curec = cSearch();
+    var ranges = [],ls;
+    if((ls = curec.exec(curec.indexStr)) != null) {
+      ranges.push({'anchor': RetIDE.posFromIndex(curec.lastIndex - ls[0].length), 'head': RetIDE.posFromIndex(curec.lastIndex)});
+      RetIDE.setSelections(ranges, 0);
+    }else{
+        layer.msg('到底部了, 继续点击则从头搜索!');
+        ee=false;
+        RetIDE.setCursor({'line':0, 'ch':0});
+    }
+    
+}
+
+//标记搜索所有文本
+function SearchBz(){
+    RetIDE.setCursor({'line':0, 'ch':0});
+    curec = cSearch();
+    var ranges = [],ls,ii=0;
+    while ((ls = curec.exec(curec.indexStr)) != null) {
+        ranges.push({'anchor': RetIDE.posFromIndex(curec.lastIndex - ls[0].length), 'head': RetIDE.posFromIndex(curec.lastIndex)});
+        ii++;
+    }
+    if (ranges.length)RetIDE.setSelections(ranges, 0);
+    layer.msg('总数为: '+ii);
+}
+
 </script>
 
 <!-- Json编辑器 JM  -->
@@ -1297,6 +1445,14 @@ var editor = new JSONEditor(jsoneditor, options, json);
         //if(frame===null) frame =window;
         policy.forceCurrent();//忽略
     });
+    /*
+    //跳转网页全截取下来
+    win.on('navigation', function (frame, url, policy) {
+        console.log(arguments,this);
+        //if(frame===null) frame =window;
+        policy.forceCurrent();//忽略
+    });
+    */
 </script>
 
 </html>

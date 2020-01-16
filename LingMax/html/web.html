@@ -169,7 +169,7 @@
                             location.reload();
                             return;
                         }
-                        db.all('select * from web where name like "%' + sv + '%" or info like "%' + sv + '%" or addr like "%' + sv + '%" order by sortx desc', [], function(err, rows) {
+                        db.all('select * from web where name like ? or info like ? or addr like ? order by sortx desc', ['%' + sv + '%','%' + sv + '%','%' + sv + '%',], function(err, rows) {
                             var ls = [];
                             for (val in rows) {
                                 ls.push(rows[val]);

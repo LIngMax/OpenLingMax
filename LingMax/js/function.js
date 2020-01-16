@@ -26,7 +26,7 @@ window.ondragover = function (e) { e.preventDefault(); return false };
 window.ondrop = function (e) { e.preventDefault(); return false };
 
 /**
- * 让浏览器无法选中元素
+ * 让浏览器无法选中元素 折叠卡的问题
  */
 [].slice.call(document.querySelectorAll('.selectNone'))//坑 让nodelist转真array
 .forEach(ee => {
@@ -35,6 +35,72 @@ window.ondrop = function (e) { e.preventDefault(); return false };
         return false;
     };
 });
+
+
+/**
+ * @Description: 获取正则子匹配的正则字符串 必须是正确正则  优化一下就可用在php了
+ * @Author: LingMax[xiaohxx@qq.com]
+ * @Date: 2019-11-10 15:58:24
+ * @param string $str 传统的正则文本  不要有/xxx/的/
+ * @return: Array
+ */
+function getRegMatch($str){
+    var $arrMin     = [];//存放层数组
+    var $obj        = [];//临时存放层
+    var $bz         = false;//标志
+    var $cen        = 0;//匹配层数
+    var $lsStr      = ''; 
+    var $lxpop      = 0;//出栈计数
+    var $lxpush     = 0;//进栈计数
+    var $lsArr      = [];
+    var $ls         = [];
+    $arrMin.push({"zz":"","int":0,"pop":0});
+    for (let $i = 0; $i < $str.length; $i++) {
+        if($str[$i] == "(" && !$bz) {
+            //进入子匹配
+            $cen++;
+            $lxpush++;
+            $arrMin.push({"zz":"","int":$lxpush,"pop":0});
+        }else if($str[$i] == ")" && !$bz){
+            //退出子匹配
+            $lxpop++;
+            $lsStr = $arrMin.pop();
+            $lsStr["pop"] = $lxpop;
+            if($lsStr["pop"] > $lsStr["int"] ){
+                $lsArr = [];
+                do {
+                    $ls = $obj.pop();
+                    if($ls == null) break;
+                    if($lsStr["int"] > $ls["int"]){
+                        $obj.push($ls);
+                        break;
+                    }else{
+                        $lsArr.push($ls);
+                    }
+                } while (true);
+                $lsArr.push($lsStr);
+                $obj=$obj.concat($lsArr.reverse());
+            }else{
+                $obj.push($lsStr);
+            }
+            $cen--;
+            $arrMin[$cen]["zz"]+="("+$lsStr["zz"]+")";
+        }else{
+            if($str[$i] === "\\" ) {
+                $bz = !$bz;//标志
+            }else{
+                $bz = false;//标志
+            }
+            $arrMin[$cen]["zz"]+=$str[$i];
+        }
+    }
+    $arrMin = $arrMin.concat($obj);
+    var arr = [];
+    for (let i = 0; i < $arrMin.length; i++) {
+        if($arrMin[i]['zz'][0]!=="?")arr.push($arrMin[i]['zz']);
+    }
+    return arr;
+}
 
 
 /**
@@ -118,7 +184,7 @@ function downloadFile(uri,filename,callback){
         if(typeof callback == "function") callback('HTTP错误-> 代码: ' + err['code'] + "信息: " + err['message']);
     });
 
-    rr.pipe(stream);
+    rr.pipe(stream);//绑定数据写进硬盘
 
     return rr;
 }
@@ -255,9 +321,9 @@ function httpAll(o={}) {
     s.responseType  = 'blob';
     s.withCredentials = true;//cookies跨域分离
     var arrName=['type','url','CallBack','data','Headers','Cookies'];
-    for (const key in Option) {
-        if (Option.hasOwnProperty(key) && !arrName.includes(key)){
-            s[key] = Option[key];
+    for (const key in o) {
+        if (o.hasOwnProperty(key) /*&& !arrName.includes(key)*/){
+            s[key] = o[key];
         }
     }
     
@@ -298,7 +364,12 @@ function httpAll(o={}) {
 
 
     s.onloadend = function () {
-        if(s.response==null){try {o.CallBack(s);} catch (error) {};throw new Error('数据为空!');}
+        if(s.response==null){
+            try {
+                s.__defineGetter__('response', function () { return new Blob(); });
+            } catch (error) {console.log(error);};
+            console.log('接收异常数据为空!');
+        }
         s.responseBlob = s.response.slice();
         try {
             var ff = new FileReader();
@@ -318,7 +389,7 @@ function httpAll(o={}) {
                         ff2.addEventListener("loadend", function(){
                             s.responseArrayBuffer = ff2.result;
                             s.time_decode = jx + new Date().getTime()-(tt+s.time_send)
-                            try {o.CallBack(s);} catch (error) {}
+                            try {o.CallBack(s);} catch (error) {console.log(error);}
                             s.time_CallBack = new Date().getTime()-(tt+s.time_send+s.time_decode)
                             s.abort();
                         });
@@ -337,7 +408,7 @@ function httpAll(o={}) {
     };
     jx = new Date().getTime()-tt;
     tt = new Date().getTime();
-    s.send(o.data); 
+    try {s.send(o.data);} catch (error) {console.log('http捕获到异常',error);}
     s.sendHeaders = HeadersStr;
     return s;
 }
@@ -379,7 +450,7 @@ function getCookies(url,CallBack){
  * @param {*} url 
  */
 function url2Origin(url){
-    return /^https{0,1}:...+?(?=\/|\s*$)/i.exec(url);
+    return /^.{2,6}:...+?(?=\/|\s*$)/i.exec(url);
 }
 
 
@@ -461,7 +532,7 @@ function file_write_del(file,data,code = 'GBK',time=8000){
  * @param {string} data      代码数据
  * @param {string} extend    带.文件扩展名 .bat 
  * @param {boolean} su       是否为超级管理员权限
- * @param {boolean} window   是否隐藏窗口
+ * @param {boolean} window   是否显示窗口
  * @param {string} type      启动依赖 例:node python java cmd regedit
  */
 function vbs_runData(data,extend='.bat',su=true,window=false,type=''){

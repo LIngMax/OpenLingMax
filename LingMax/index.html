@@ -45,7 +45,7 @@
     }
     
     #move {
-        width: calc( 100% - 360px);
+        width: calc( 100% - 450px);
         height: 100%;
         -webkit-app-region: drag;
     }
@@ -94,17 +94,20 @@
                 <a href="javascript: nwjs.Shell.openExternal('http://www.LingMax.top');" class="layui-logo">开发者神器库 辅助利器!!</a>
             </ul>
             <ul class="layui-nav layui-layout-right psx">
-                <li class="layui-nav-item bna" lay-unselect>
-                    <a href='javascript: gbsj();' title="重启软件,可以修复网络错误!!"> <i class="layui-icon layui-icon-refresh-1"></i>重载</a>
+                <li class="layui-nav-item  bna " lay-unselect>
+                    <a href='javascript: win.minimize();win.setShowInTaskbar(false);'> <i class="layui-icon layui-icon-triangle-d"></i> 最小化</a>
                 </li>
-                <li class="layui-nav-item ">
+                <li class="layui-nav-item" lay-unselect>
+                    <a href='javascript: ;' id="winIo" title="最大化窗口!!"> <i class="layui-icon layui-icon-layer"></i> 最大化</a>
+                </li>
+                <li class="layui-nav-item bna">
                     <a href="javascript: tray.remove();nwjs.App.closeAllWindows();"> <i class="layui-icon layui-icon-close"></i> 关闭</a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href='javascript: gbsj();' title="重启软件,可以修复网络错误!!"> <i class="layui-icon layui-icon-refresh-1"></i>重载</a>
                 </li>
                 <li class="layui-nav-item bna" lay-unselect>
                     <a href='javascript: sxwy();'> <i class="layui-icon layui-icon-refresh-1"></i> 刷新</a>
-                </li>
-                <li class="layui-nav-item " lay-unselect>
-                    <a href='javascript: win.minimize();win.setShowInTaskbar(false);'> <i class="layui-icon layui-icon-triangle-d"></i> 最小化</a>
                 </li>
             </ul>
         </div>
@@ -113,15 +116,14 @@
             <div class="layui-side-scroll">
                 <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
                 <ul class="layui-nav layui-bg-cyan layui-nav-tree layui-inline" lay-filter="test">
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsDEV.html">文本处理</a></li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/POST.html">Http请求</a></li>
+                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/dnsAll.html">Http优化</a></li>
                     <li class="layui-nav-item">
-                        <a href="#">工具仓库(Win)</a>
+                        <a href="#">工具仓库</a>
                         <dl class="layui-nav-child" id="lbx">
                         </dl>
                     </li>
-                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsDEV.html">文本处理</a></li>
-                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/POST.html">Post表单</a></li>
-                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/devTool.html">辅助工具</a></li>
-                    <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsFZ.html#0">脚本调试</a></li>
                     <li class="layui-nav-item">
                         <a href="#" data-url="#">脚本仓库</a>
                         <dl class="layui-nav-child" id="exec_mlk">
@@ -130,6 +132,13 @@
                     <li class="layui-nav-item">
                         <a href="#" data-url="#">常用网站</a>
                         <dl class="layui-nav-child" id="cyz">
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="#">其它工具</a>
+                        <dl class="layui-nav-child" >
+                            <li class="layui-nav-item"><a class="nl" href="#" data-url="html/devTool.html">辅助工具</a></li>
+                            <li class="layui-nav-item"><a class="nl" href="#" data-url="html/toolsFZ.html#0">脚本调试</a></li>
                         </dl>
                     </li>
                     <li class="layui-nav-item"><a class="nl" href="#" data-url="html/index.html">更新日志</a></li>
@@ -157,7 +166,7 @@
 <script src="js/system_open.js"></script>
 <script src="js/VP.js"></script>
 <script>
-    var ismaxmize = false,//窗口最大化标志
+    var ismaxmize = win.appWindow.isMaximized(),//窗口最大化标志
     element,//layui
     csh_count = 0,//初始化事件总数
     csh_int = 0,//初始化完成的事件数量
@@ -302,21 +311,22 @@ function csh() {
     if(csh_int < csh_count){
         return;//事件未触发完成
     }
-    //窗口最大化事件--废弃
-    $(move).dblclick(function() {
-        if (ismaxmize) {
-            ismaxmize = false;
-            win.restore();
-        } else {
-            ismaxmize = true;
-            win.maximize();
-        }
-    });
     Start_Iframes();
     element.render('nav', 'test');
     //开始初始化
     $('.layui-side .nl').eq(0).click();
 }
+
+//窗口最大化事件
+$(winIo).click(function() {
+    if (ismaxmize) {
+        ismaxmize = false;
+        win.restore();
+    } else {
+        ismaxmize = true;
+        win.maximize();
+    }
+});
 </script>
 <!-- <script src="js/MoveWindows.js"></script> -->
 
