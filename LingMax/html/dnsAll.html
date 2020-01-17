@@ -61,14 +61,16 @@
 </body>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container" >
-        <button class="layui-btn layui-btn-sm " lay-event="Add" onclick="if(this.innerHTML=='关闭优化'){this.innerHTML='开启优化';ztzt=false;}else{this.innerHTML='关闭优化';ztzt=true;}">关闭优化</button>
-        <button class="layui-btn layui-btn-sm"  onclick="table.reload('website', {data: ddaatt});">清空缓存</button>
-        <input type="text" id="Search_val" placeholder="请输入域名" style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;" onkeydown="if(event.keyCode==13){SearchX.click();}">
-        <button id="SearchX" class="layui-btn layui-btn-sm" lay-event="Search"><i class="layui-icon layui-icon-search"></i></button>
-        <button class="layui-btn layui-btn-sm"  onclick="table.reload('website', {data: ddaatt});">刷新显示</button>
-        
-        <span style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;">保留dns : 114.114.114.114 . 优化缓存:20分钟</span>
+        <button class="layui-btn layui-btn-sm"  onclick="setDns();layer.msg('命令已经发起! 重启浏览器生效!');">(点此)必须设DNS为127.0.0.1</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="Add" onclick="if(this.innerHTML=='关闭优化'){this.innerHTML='开启优化';ztzt=false;}else{this.innerHTML='关闭优化';ztzt=true;}">关闭优化</button>
+        <button class="layui-btn layui-btn-sm"  onclick="Ecache={};ddaatt=[];Dcache={};table.reload('website', {data: ddaatt});">清空已优化的缓存</button>
+        <span style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;">保留dns : 114.114.114.114 . 缓存时间: 40分钟 . 速率: 5个/秒</span>
+        <br>
         <button class="layui-btn layui-btn-sm"  onclick="vbs_runData('ipconfig /flushdns');layer.msg('成功! 重启浏览器生效!');">清空系统DNS缓存</button>
+        
+        <input type="text" id="Search_val" placeholder="请输入域名" style="width: 180px !important;height: 30px !important;font-size: 14px;margin-right: 10px;" onkeydown="if(event.keyCode==13){SearchX.click();}">
+        <button id="SearchX" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Search"><i class="layui-icon layui-icon-search"></i></button>
+        <button class="layui-btn layui-btn-sm"  onclick="sxxs();table.reload('website', {data: ddaatt});">刷新显示</button>
         
     </div>
     
@@ -116,6 +118,41 @@
 <script src="../layui/layui.all.js"></script>
 <script src="../js/netCache.js"></script>
 <script>
+    function setDns(){
+        var arr = require('os').networkInterfaces();
+        for (const key in arr) {
+            if (arr.hasOwnProperty(key)) {
+                (function () {
+                    var ssttrr = `netsh interface ip set dns "`+key+`" static 127.0.0.1 PRIMARY`;
+                    var ssttrr1 = `netsh interface ip add dns "`+key+`" 114.114.114.114`;
+                    vbs_runData(ssttrr+"\r\n"+ssttrr1);
+                    
+                    setTimeout(()=>{cmd(ssttrr)},10);
+                    setTimeout(()=>{cmd(ssttrr1)},2000);
+                })();
+                
+            }
+        }
+        
+    }
+
+    function sxxs(){
+        var retArr,aarr=[];
+        for (const key in Dcache) {
+            retArr = Dcache[key].retArr;
+            aarr.push({
+                'host':retArr[0].host,
+                'zs':retArr[0].zs,
+                'tcp':retArr[0].tcp,
+                'ping':retArr[0].ping,
+                'ip':retArr[0].ip,
+                'ips':retArr.length,
+                //'cc':c.retArr,
+            });
+        }
+
+        ddaatt = aarr;
+    }
     window.onbeforeunload = () => {udpServer.close()};//关闭时顺便关闭53端口
     var table;
     //初始化
@@ -126,7 +163,7 @@
             cols: [
                 [{
                     field: 'host',
-                    title: '被优化的域名',
+                    title: '系统被优化的域名',
                 }, {
                     field: 'ip',
                     title: 'IP',
@@ -182,6 +219,7 @@
                     sv = sv.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                     var exes = new RegExp('.*'+sv+'.*','i');
                     var aarr = [];
+                    sxxs();//刷新显示
                     for (const key in ddaatt) {
                         if (ddaatt.hasOwnProperty(key)) {
                             const ee = ddaatt[key];
@@ -205,20 +243,9 @@
                     layer.confirm('真的删除行么:'+d.host, function(index) {
                         delete Dcache[d.host];
                         delete Ecache[d.host];
-                        for (const key in ddaatt) {
-                            if (ddaatt.hasOwnProperty(key)) {
-                                if(ddaatt[key].host==d.host){
-                                    //delete ddaatt[key];
-                                    ddaatt.splice(key,1);
-                                    break;
-                                }
-                                
-                            }
-                        }
+                        sxxs();
                         //obj.del();
-                        table.reload('website', {
-                            'data': ddaatt
-                        });
+                        table.reload('website', {'data': ddaatt});
                         layer.close(index);
                     });
                     break;
@@ -237,7 +264,13 @@
                         'content': '<table id="demoxx" lay-filter="testxx"></table>' ,//这里content是一个普通的String
                         'success': function(layero, index){
                             var aarrxxe = [];
-                            var ccw = Dcache[d.host].retArr;
+
+                            var ccw = Dcache[d.host];
+                            if(!ccw){
+                                layer.msg('该缓存已经过期,请刷新显示!');
+                                return;
+                            }
+                            ccw =ccw.retArr;
                             for (const key in ccw) {
                                 if (ccw.hasOwnProperty(key)) {
                                     const c = ccw[key];
@@ -253,6 +286,7 @@
                             //console.log(arr,lsarr);
                             layui.table.render({
                                 limit:90,
+                                even: true,
                                 'page':true,
                                 'elem': '#demoxx', //指定原始表格元素选择器（推荐id选择器）
                                 'cols': [[
@@ -290,14 +324,22 @@
                                 var dd = obj0.data;
                                 switch (obj0.event) {
                                     case 'open':
-                                        var ccwx = Dcache[d.host].retArr;
+                                        var ccwx = Dcache[d.host];
+                                        if(!ccwx){
+                                            layer.msg('该缓存已经过期,请刷新显示!');
+                                            return;
+                                        }
+                                        ccwx =ccwx.retArr;
                                         for (const key22 in ccwx) {
                                             if (ccwx.hasOwnProperty(key22)) {
                                                 if(ccwx[key22].ip == dd.ip){
                                                     var lls = ccwx[key22];
                                                     Dcache[d.host].retArr.splice(key22,1,ccwx[0]);
                                                     Dcache[d.host].retArr[0] = lls;
+                                                    sxxs();
+                                                    table.reload('website', {'data': ddaatt});
                                                     layer.close(index);
+                                                    break;
                                                 }
                                             }
                                         }

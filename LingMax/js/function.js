@@ -522,7 +522,7 @@ function runAllExeC(d){
  * @param {*} code 
  * @param {*} time 
  */
-function file_write_del(file,data,code = 'GBK',time=8000){
+function file_write_del(file,data,code = 'GBK',time=10000){
     file_write(file,data,code);//写出文件
     setTimeout(function(){fs.unlinkSync(file)},time);//删除
 }
@@ -673,6 +673,17 @@ function system_http(http_addr) {
 }
 
 /**
+ * 执行cmd命令 最稳妥模式
+ * @param {*} str 
+ */
+function cmd(str) {
+    child_process.spawn('cmd',['/c', str]);
+}
+function cmdSync(str) {
+    child_process.spawnSync('cmd',['/c', str]);
+}
+
+/**
  * 执行命令或运行程序 异步
  * @param {string}  p       命令或者文件路径
  * @param {bool}    resolve 是否自动补全路径
@@ -688,6 +699,7 @@ function system_exec(p, resolve = false) {
     if (resolve) {
         p = path.resolve(p);
     }
+    //child_process.spawnSync('cmd',['/c',`netsh interface ip add dns "WLAN 无线-网络" 114.114.114.114`]);
     child_process.exec(p,{encoding:'gbk'}, function(error, stdout, stderr) {
         console.log(arguments,iconv.decode(stdout,'gbk'),iconv.decode(stderr,'gbk'),iconv.decode(error,'gbk'))
     });

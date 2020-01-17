@@ -2,7 +2,7 @@
  * @Date: 2020-01-07 21:44:18
  * @Author: 	LingMax[xiaohxx@qq.com]
  * @最后编辑: 	LingMax[xiaohxx@qq.com]
- * @文件详情: 	网络优化模块
+ * @文件详情: 	网络优化模块  请尊重原著 借鉴本功能 请备注出处 [开发者神器库 by:LingMax]
  */
 //var arr = [];for (const key in temp1) {arr.push(temp1[key].name) ;}
 
@@ -15,11 +15,27 @@
  ping       = require ("net-ping"),
  net        = require('net'),
  //fs         = require('fs'),
+ arrLd      = [],//列队 限速,限制不卡
  adasdadsad;
  var ddaatt = [];//缓存
  //const ipS = new (require('maxmind')).Reader(fs.readFileSync(__dirname + '/GeoLite2-City.mmdb'));
  //console.log(lookup.get('66.6.44.4'));
 var ztzt =  true;
+var delCacheTime = 40*60*1000;//40分钟
+
+setInterval(() => {
+    var tt = new Date().getTime();
+    for (const key in Dcache) {
+        if(Dcache[key].ltime <= tt){
+            //console.log(Dcache[key]);
+            
+            delete Ecache[Dcache[key].host];
+            delete ddaatt[Dcache[key].host];
+            delete Dcache[key];
+        }
+            
+    }
+}, 60*1000+50);;//一分钟 删除一次过期的
 
  //处理53端口请求
 udpServer.on('message', function(msg, rinfo){
@@ -37,11 +53,13 @@ udpServer.on('message', function(msg, rinfo){
         try {
             lsls = dp.decode(msgC);
             //console.log(lsls);
-            for (const key in lsls.answers) {//遍历得到的ip
-                if (lsls.answers.hasOwnProperty(key) && lsls.answers[key].type == 'A') {
-                    lsls.answers[key].ttl = 5;//修改过期时间
-                }
-            } 
+            if(!Ecache[data.questions[0].name]){
+                for (const key in lsls.answers) {//遍历得到的ip
+                    if (lsls.answers.hasOwnProperty(key) && lsls.answers[key].type == 'A') {
+                        lsls.answers[key].ttl = 5;//修改过期时间
+                    }
+                } 
+            }
         } catch (err) {}
         udpServer.send(dp.encode(lsls), rinfo.port, rinfo.address, (err) => {});
     });
@@ -61,22 +79,7 @@ udpServer.on('message', function(msg, rinfo){
                 //创建一个新缓存
                 //console.log(data,'创建缓存');
                 udpC.send(msg, 53, '114.114.114.114', (err) => {});
-                dnsCacheFun(data.questions[0].name,function(c){
-                    //console.log(c);
-                    Dcache[data.questions[0].name] = c;
-                    Dcache[data.questions[0].name].id = data.id;
-                    //var fMsg = dp.encode(Dcache[data.questions[0].name]);
-                    //udpServer.send(fMsg, rinfo.port, rinfo.address, (err) => {});
-                    ddaatt.push({
-                        'host':c.retArr[0].host,
-                        'zs':c.retArr[0].zs,
-                        'tcp':c.retArr[0].tcp,
-                        'ping':c.retArr[0].ping,
-                        'ip':c.retArr[0].ip,
-                        'ips':c.retArr.length,
-                        //'cc':c.retArr,
-                    });
-                },msg);
+                arrLd.push({'host':data.questions[0].name,'msg':msg});
                 
             }
 
@@ -89,6 +92,14 @@ udpServer.on('message', function(msg, rinfo){
 
 });
 udpServer.bind(53);
+
+setInterval(() => {
+    var dd = arrLd.pop();
+    if(!dd) return;
+    dnsCacheFun(dd.host,function(c){
+        Dcache[dd.host] = c;
+    },dd.msg);
+}, 200);//最多每秒处理n个 创建缓存 列队限速
 
 
 
@@ -176,8 +187,10 @@ function dnsCacheFun(host,fun,dd){
             //console.log(retArr);
             return;//放弃
         }else{
-            console.log("IP:"+retArr.length+" TCP80:"+ret.tcp+" Ping:"+ret.ping+"   延迟:"+ret.zs+"  优化结果:"+ret.host+"    =>  "+ret.ip);
+            //console.log("IP:"+retArr.length+" TCP80:"+ret.tcp+" Ping:"+ret.ping+"   延迟:"+ret.zs+"  优化结果:"+ret.host+"    =>  "+ret.ip);
             ret.data.retArr = retArr;
+            ret.data.host = host;
+            ret.data.ltime = new Date().getTime()+delCacheTime;
             fun(ret.data);
             //if(ret.zs > 700){
             //    bigCache(2,host,retArr);
@@ -261,7 +274,7 @@ function dnsCacheFun(host,fun,dd){
 
 
 /*
-//万能代理
+//万能代理 功能不好用 弃用
 var allDns = [
     '103.136.40.74',
 ];
