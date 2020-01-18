@@ -66,7 +66,7 @@
         <button class="layui-btn layui-btn-sm"  onclick="Ecache={};ddaatt=[];Dcache={};table.reload('website', {data: ddaatt});">清空已优化的缓存</button>
         <span style="width: 100px !important;height: 30px !important;font-size: 14px;margin-right: 10px;">保留dns : 114.114.114.114 . 缓存时间: 40分钟 . 速率: 5个/秒</span>
         <br>
-        <button class="layui-btn layui-btn-sm"  onclick="vbs_runData('ipconfig /flushdns');layer.msg('成功! 重启浏览器生效!');">清空系统DNS缓存</button>
+        <button class="layui-btn layui-btn-sm"  onclick="vbs_runData('ipconfig /flushdns');cmd('ipconfig /flushdns');layer.msg('成功! 重启浏览器生效!');">清空系统DNS缓存</button>
         
         <input type="text" id="Search_val" placeholder="请输入域名" style="width: 180px !important;height: 30px !important;font-size: 14px;margin-right: 10px;" onkeydown="if(event.keyCode==13){SearchX.click();}">
         <button id="SearchX" class="layui-btn layui-btn-sm layui-btn-normal" lay-event="Search"><i class="layui-icon layui-icon-search"></i></button>
@@ -237,6 +237,7 @@
 
         //监听行工具事件
         table.on('tool(demo)', function(obj) {
+            try {
             var d = obj.data;
             switch (obj.event) {
                 case 'del':
@@ -263,8 +264,8 @@
                         'type': 1, 
                         'content': '<table id="demoxx" lay-filter="testxx"></table>' ,//这里content是一个普通的String
                         'success': function(layero, index){
+                            try {
                             var aarrxxe = [];
-
                             var ccw = Dcache[d.host];
                             if(!ccw){
                                 layer.msg('该缓存已经过期,请刷新显示!');
@@ -321,6 +322,9 @@
                             });
                             //监听行工具事件
                             layui.table.on('tool(testxx)', function(obj0) {
+                                try {
+                                    
+                                
                                 var dd = obj0.data;
                                 switch (obj0.event) {
                                     case 'open':
@@ -336,7 +340,11 @@
                                                     var lls = ccwx[key22];
                                                     Dcache[d.host].retArr.splice(key22,1,ccwx[0]);
                                                     Dcache[d.host].retArr[0] = lls;
+                                                    Dcache[d.host].answers[0].data = lls.ip;
                                                     sxxs();
+                                                    vbs_runData('ipconfig /flushdns');
+                                                    cmd('ipconfig /flushdns');
+                                                    layer.msg('切换成功! 重启浏览器生效!');
                                                     table.reload('website', {'data': ddaatt});
                                                     layer.close(index);
                                                     break;
@@ -345,7 +353,14 @@
                                         }
                                         break;
                                 }
+                                } catch (error) {
+                                    
+                                }
                             });
+                            } catch (error) {
+                                
+                            }
+
                         }
                     });
                     break;
@@ -353,6 +368,9 @@
                     //编辑
                     vbs_runData('cmd /c ping '+d.host,'.bat',true,true);
                     break;
+            }
+            } catch (error) {
+                                
             }
         });
     });

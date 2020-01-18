@@ -180,7 +180,10 @@
         localStorage['index_aabbcc'] = '';
     }else{
         //软件启动-最小化
-        win.minimize();
+        setTimeout(() => {
+            win.minimize();
+        }, 1500);
+        
     }
     tray.on("click",function(){
         if(window.screenTop < -30000){
