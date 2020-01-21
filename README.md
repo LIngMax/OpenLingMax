@@ -5,7 +5,7 @@
 
 名称: 开发者神器库5.0
 
-技术栈: NodeJs底层 + NW.js内核 + layui界面框架 +  webkit通用web技术 + JQ框架 + CodeMirror编辑器
+技术栈: NodeJs底层 + NW.js内核 + layui界面框架 +  webkit通用技术 + sqlite3数据库 + JQ框架 + CodeMirror编辑器
 
 语言: 中文
 
