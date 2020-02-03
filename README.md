@@ -8,7 +8,7 @@
 
 平台: winXP/win7/win8/win10
 
-下载地址: https://pan.baidu.com/s/14Bz45GuCyL7lSiZANmT0xw
+下载地址: https://pan.baidu.com/s/14Bz45GuCyL7lSiZANmT0xw#list/path=%2FOpenLingMax
 
 简介:
 
@@ -28,7 +28,7 @@ LingMax    目录是 代码文件目录
 
 3.软件窗口 鼠标右键 > 点击(检查[调试webkit内核])按钮 (检查背景[调试NodeJs])  弹出 软件调试工具
 
-4.本软件采用模块化开发 一般一个页面加载的文件就几个 (前期开发的代码可能有点乱 建议折叠div/function再调试)
+4.本软件采用模块化开发 一般一个页面加载的文件就几个 (前期开发的代码可能有长 建议折叠div/function再调试)
 
 
 .
