@@ -22,7 +22,7 @@
 NW.js      目录是 NW.js 0.14.7 SDK 版
 LingMax    目录是 代码文件目录
 
-1.因为Nw.js插件需要编译 所以[本仓库带] node_modules 
+1.因为Nw.js部分插件需要vc编译 所以[本仓库带] node_modules 不需要用npm下载了
 
 2.拉取下来直接可以执行 开发者工具箱.exe 来启动
 
